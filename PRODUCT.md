@@ -1,0 +1,55 @@
+# Product
+
+<!-- impeccable:product-schema 1 -->
+
+## Platform
+
+web
+
+## Stack
+
+Marketing site prototype: standalone Vite + React + Tailwind CSS + React Router (user-confirmed), with mock lender data. Pages and components are structured to be ported into the planned production stack: Laravel + Inertia.js + React + Tailwind, Filament admin, MySQL.
+
+## Users
+
+- **Prospective borrowers in India** looking at home, personal, business, property, vehicle and balance-transfer loans. Most browse on mobile, often weighing a large commitment, and want to understand the real cost before talking to anyone.
+- **Company staff** follow up on enquiries (served by Filament, out of scope for the marketing surface).
+
+## Product Purpose
+
+Excellence Finance is an independent loan advisory and brokerage business, not a bank. The site explains its services, helps visitors compare indicative lender offers on total cost of borrowing (not just the headline rate), provides an EMI calculator, and captures enquiries for staff follow-up. Success means qualified enquiries that arrive with context (loan type, amount, tenure, offer considered).
+
+## Positioning
+
+Compares lenders on the whole cost: rate, processing and other fees, GST, upfront charges, total interest and total repayment, with sources and last-verified dates shown. Advice-led and transparent; it never promises approval, rates or timelines.
+
+## Capabilities and Constraints
+
+- Loan categories (configurable): Home Loan, Personal Loan, Business Loan, Loan Against Property, Vehicle Loan, Balance Transfer.
+- Comparison inputs: loan type, amount, tenure, lender selection, self-reported credit-score band including "I don't know my score", plus optional eligibility details.
+- Missing data shows as "Not available / Confirm with lender"; nothing is guessed.
+- EMI calculator: standard reducing-balance formula, handles zero interest, INR formatting, inputs carried into the enquiry.
+- Lead form: required name, Indian mobile, loan category, city, consent. No PAN, Aadhaar or document uploads.
+- Disclaimers sit next to estimates, not only in the footer.
+
+## Brand Commitments
+
+- Name: Excellence Finance (trading name; legal name to be confirmed).
+- Requested by the user: luxury minimalism, white and blue base, warm brass accent, purposeful animation.
+
+## Evidence on Hand
+
+- Brand logo supplied by the user: `marketing-site/brand/logo-original.jpg` (web versions generated into `marketing-site/public/brand/`).
+- Comparison data: published rates and fees for SBI, HDFC Bank, Bank of Baroda, PNB, Bank of Maharashtra and IDFC FIRST Bank, taken from each bank's official site on 8 Nov 2026 with source links (`marketing-site/src/data/lenders.js`). Staff must re-verify before launch and on a schedule.
+- No confirmed lender partnerships, reviews, statistics, accreditations, addresses or phone numbers. Bank names identify published terms only and must not be presented as partners. Contact details are placeholders.
+
+## Product Principles
+
+1. Show the whole cost, every time.
+2. Advise, never promise.
+3. Every number cites where it came from and when it was checked.
+4. Ask only for what a first conversation needs.
+
+## Accessibility & Inclusion
+
+Keyboard access, visible labels and errors, touch-friendly controls, and usable on slow mobile connections.

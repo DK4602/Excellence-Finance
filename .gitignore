@@ -1,0 +1,62 @@
+# ─── Dependencies ───────────────────────────────────────────
+node_modules/
+
+# ─── Build output and caches ────────────────────────────────
+dist/
+dist-ssr/
+build/
+coverage/
+.cache/
+.vite/
+*.tsbuildinfo
+*.local
+
+# ─── Environment and secrets (never commit real keys) ───────
+.env
+.env.*
+!.env.example
+
+# ─── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── OS files ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ─── Editors ────────────────────────────────────────────────
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ─── AI agent skills ────────────────────────────────────────
+# Installed copies are reproducible from skills-lock.json
+# (npx skills add ...), and impeccable downloads a binary on first run.
+.agents/skills/
+.claude/skills/
+.claude/settings.local.json
+
+# Skill runtime output (scratch, screenshots, local config)
+.taste-skill/
+.impeccable/questions/
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/critique/snapshots/
+.impeccable/build/
+.impeccable/config.local.json
+
+# ─── Marketing site working files ───────────────────────────
+# Raw logo downloads and contact sheets used to pick bank logos.
+# The chosen files live in marketing-site/public/banks/.
+marketing-site/brand/banks-raw/
+marketing-site/brand/*-sheet.png
+shots/

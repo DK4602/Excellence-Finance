@@ -1,0 +1,211 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/literata/opsz.css';
+@import '@fontsource-variable/figtree/wght.css';
+
+@theme {
+  /* Palette: porcelain ground, ink navy, lapis action, brass accent */
+  --color-porcelain: #ffffff;
+  --color-mist: #f5f7fb;
+  --color-sky: #e9effc;
+  --color-line: #e2e7f1;
+  --color-line-strong: #c9d2e3;
+  /* Brand navy, cyan and gold sampled from the logo */
+  --color-ink: #13235c;
+  --color-ink-soft: #1d3070;
+  --color-cyan: #1fa9cc;
+  --color-slate: #4a556d;
+  --color-lapis: #2443b8;
+  --color-lapis-deep: #1a3290;
+  --color-lapis-soft: #7e9bea;
+  --color-brass: #c0913a;
+  --color-brass-ink: #7e6230;
+  --color-brass-pale: #f6efe2;
+  --color-danger: #b42318;
+
+  /* Chart series (validated: principal, interest, fees) */
+  --color-principal: #2b4fc7;
+  --color-interest: #7e9bea;
+  --color-fees: #c0913a;
+
+  --font-display: 'Literata Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Figtree Variable', 'Segoe UI', system-ui, sans-serif;
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --shadow-float: 0 1px 2px rgb(19 35 92 / 0.04), 0 12px 32px -12px rgb(19 35 92 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(19 35 92 / 0.05), 0 22px 44px -18px rgb(19 35 92 / 0.22);
+}
+
+@layer base {
+  html {
+    color: var(--color-ink);
+    background: var(--color-porcelain);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    background: var(--color-porcelain);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  ::selection {
+    background: var(--color-brass-pale);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-lapis);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  input,
+  select,
+  textarea {
+    caret-color: var(--color-lapis);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  a {
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+  html {
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+}
+
+/* Headings: Literata, a screen-first book serif with sturdy strokes */
+@utility font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 560;
+  letter-spacing: -0.022em;
+}
+
+/* Money figures: Figtree semibold, tabular, for instant legibility */
+@utility figure {
+  font-family: var(--font-sans);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+@utility wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 3.5rem;
+  }
+}
+
+/* Drawn underline for text links */
+@utility link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 320ms var(--ease-out-strong);
+  &:hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* Range input: filled track via --pct */
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  --pct: 50%;
+}
+.range::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--color-lapis) 0 var(--pct),
+    var(--color-line-strong) var(--pct) 100%
+  );
+}
+.range::-moz-range-track {
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-line-strong);
+}
+.range::-moz-range-progress {
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-lapis);
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9.5px;
+  border-radius: 999px;
+  background: var(--color-porcelain);
+  border: 2px solid var(--color-ink);
+  box-shadow: 0 2px 8px rgb(19 35 92 / 0.18);
+  transition: transform 160ms var(--ease-out-strong);
+}
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-porcelain);
+  border: 2px solid var(--color-ink);
+  box-shadow: 0 2px 8px rgb(19 35 92 / 0.18);
+}
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.range:focus-visible {
+  outline: none;
+}
+.range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-lapis);
+  outline-offset: 3px;
+}
+
+/* Press feedback shared by buttons */
+.press {
+  transition:
+    transform 160ms var(--ease-out-strong),
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
