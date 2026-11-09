@@ -2,11 +2,11 @@ import { Link } from 'react-router'
 import { ArrowUpRight, Info } from 'lucide-react'
 
 const base =
-  'press inline-flex items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap select-none disabled:opacity-50 disabled:pointer-events-none'
+  'press inline-flex items-center justify-center gap-2 rounded-full text-center font-medium leading-tight select-none sm:whitespace-nowrap disabled:opacity-50 disabled:pointer-events-none'
 const sizes = {
-  md: 'h-12 px-6 text-[0.98rem]',
-  sm: 'h-10 px-4 text-sm',
-  lg: 'h-14 px-8 text-base',
+  md: 'min-h-12 px-6 py-2.5 text-[0.98rem]',
+  sm: 'min-h-10 px-4 py-2 text-sm',
+  lg: 'min-h-14 px-8 py-3 text-base',
 }
 const variants = {
   primary: 'bg-ink text-white hover:bg-lapis shadow-[0_8px_20px_-10px_rgb(19_35_92/0.6)]',
@@ -24,7 +24,7 @@ export function Button({ to, href, variant = 'primary', size = 'md', className =
 
 export function TextLink({ to, children, className = '' }) {
   return (
-    <Link to={to} className={`group inline-flex items-center gap-1.5 font-medium text-lapis ${className}`}>
+    <Link to={to} className={`group inline-flex min-h-11 items-center gap-1.5 font-medium text-lapis ${className}`}>
       <span className="link-draw pb-0.5">{children}</span>
       <ArrowUpRight
         aria-hidden

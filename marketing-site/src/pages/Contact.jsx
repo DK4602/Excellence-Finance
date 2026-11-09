@@ -28,12 +28,12 @@ export default function Contact() {
             {rows.map(({ icon: Icon, label, value, href }) => (
               <li key={label} className="flex gap-4 py-5">
                 <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-lapis" />
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm text-slate">{label}</p>
                   {href ? (
                     <a href={href} className="link-draw font-medium">{value}</a>
                   ) : (
-                    <p className="font-medium">{value}</p>
+                    <p className="font-medium [overflow-wrap:anywhere]">{value}</p>
                   )}
                 </div>
               </li>

@@ -13,7 +13,7 @@ export function RangeField({ label, value, min, max, step = 1, onChange, display
       <input
         id={id}
         type="range"
-        className="range mt-2"
+        className="range mt-0.5"
         min={min}
         max={max}
         step={step}
@@ -32,7 +32,7 @@ const control =
 export function Field({ label, optional, error, hint, children, id }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 flex items-baseline justify-between text-sm font-medium text-ink">
+      <label id={`${id}-label`} htmlFor={id} className="mb-1.5 flex items-baseline justify-between text-sm font-medium text-ink">
         <span>{label}</span>
         {optional && <span className="text-xs font-normal text-slate">Optional</span>}
       </label>

@@ -1,397 +1,318 @@
-import { useRef } from 'react'
+import { useCallback, useState } from 'react'
 import { Link } from 'react-router'
-import { motion, useInView, useReducedMotion } from 'motion/react'
-import { ArrowRight, Check, Mail, MessageCircle, Phone } from 'lucide-react'
-import CostInstrument from '../components/CostInstrument'
-import CostBar from '../components/CostBar'
-import AnimatedNumber from '../components/AnimatedNumber'
+import { motion, useReducedMotion } from 'motion/react'
+import {
+  ArrowLeftRight, ArrowRight, Briefcase, Building2, Check, ClipboardCheck, Clock, Handshake, House,
+  KeyRound, Mail, MessageCircle, MessagesSquare, Phone, ReceiptText, Store, UserRound,
+} from 'lucide-react'
 import Accordion from '../components/Accordion'
+import EnquiryForm from '../components/EnquiryForm'
+import HeroMark3D from '../components/HeroMark3D'
+import PartnerCarousel from '../components/PartnerCarousel'
 import Photo from '../components/Photo'
-import { Button, TextLink, Note } from '../components/ui'
-import { loans } from '../data/loans'
-import { faqGroups } from '../data/faqs'
+import { Button, Note, TextLink } from '../components/ui'
+import { getHomeContent } from '../content/home'
+import { loanById } from '../data/loans'
+import { partners } from '../data/partners'
 import { photos } from '../data/photos'
 import { site } from '../data/site'
-import { feeAmount, formatDate, formatINR, loanTotals } from '../lib/finance'
-import { lenders, DATA_CHECKED } from '../data/lenders'
-import BankLogo from '../components/BankLogo'
-import { steps } from './Process'
 import { useTitle } from '../lib/useTitle'
 
-const ease = [0.23, 1, 0.32, 1]
+// Kept so inner pages can keep importing the shared closing section from here
+export { Close } from '../components/Close'
 
-function Hero() {
+const ease = [0.23, 1, 0.32, 1]
+const ICONS = {
+  user: UserRound, building: Building2, receipt: ReceiptText, clipboard: ClipboardCheck, handshake: Handshake,
+  message: MessagesSquare, briefcase: Briefcase, store: Store, key: KeyRound, home: House, swap: ArrowLeftRight,
+}
+
+function SectionTitle({ id, children, className = '' }) {
+  return (
+    <h2 id={id} className={`font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem] ${className}`}>
+      {children}
+    </h2>
+  )
+}
+
+// A. Hero
+function Hero({ hero }) {
   const reduce = useReducedMotion()
   const rise = (d) => ({
     initial: { opacity: 0, y: reduce ? 0 : 18 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.8, delay: d, ease },
   })
-
   return (
     <section aria-labelledby="hero-title">
       <div className="wrap grid items-center gap-10 py-10 md:py-14 lg:min-h-[calc(100svh-5rem)] lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-6">
-          <motion.h1
-            id="hero-title"
-            {...rise(0.05)}
-            className="font-display text-[2.6rem] leading-[1.06] sm:text-[3.4rem] lg:text-[3.9rem] xl:text-[4.4rem]"
-          >
-            Loan advice that shows you the whole cost
+          <motion.h1 id="hero-title" {...rise(0.05)} className="font-display text-[2.6rem] leading-[1.06] sm:text-[3.4rem] lg:text-[3.9rem] xl:text-[4.4rem] 2xl:text-[4.9rem]">
+            {hero.headline}
           </motion.h1>
-          <motion.p {...rise(0.18)} className="mt-6 max-w-[46ch] text-lg text-slate md:text-xl">
-            We are independent loan advisers in India, not a bank. We compare lenders on rate, fees, GST and total repayment, then help you apply to the one that suits you.
+          <motion.p {...rise(0.18)} className="mt-6 max-w-[48ch] text-lg text-slate md:text-xl">
+            {hero.description}
           </motion.p>
           <motion.div {...rise(0.28)} className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button to="/compare" size="lg">Compare lenders</Button>
-            <Button to="/contact" size="lg" variant="secondary">Talk to an adviser</Button>
+            <Button href={hero.primaryCta.href} size="lg">{hero.primaryCta.label}</Button>
+            <Button href={hero.secondaryCta.href} size="lg" variant="secondary">{hero.secondaryCta.label}</Button>
           </motion.div>
-          <motion.ul {...rise(0.38)} className="mt-10 grid gap-2 text-[0.97rem] text-slate sm:grid-cols-2">
-            {['Home, personal, business and more', 'Fees and GST shown for every lender', 'No documents needed to enquire', 'Enquiring does not affect your score'].map((t) => (
-              <li key={t} className="flex items-start gap-2">
-                <Check aria-hidden className="mt-1 size-4 shrink-0 text-lapis" />
-                {t}
-              </li>
-            ))}
-          </motion.ul>
+          <motion.p {...rise(0.38)} className="mt-8 flex max-w-[52ch] items-start gap-2.5 text-[0.97rem] text-slate">
+            <Check aria-hidden className="mt-1 size-4 shrink-0 text-lapis" />
+            {hero.lenderNote}
+          </motion.p>
         </div>
-
-        {/* The one load moment: the photograph opens from the bottom edge */}
         <motion.div
-          className="lg:col-span-6"
-          initial={reduce ? { opacity: 0 } : { clipPath: 'inset(100% 0% 0% 0% round 24px)' }}
-          animate={reduce ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0% round 24px)' }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.77, 0, 0.175, 1] }}
+          className="mx-auto w-full max-w-[13rem] sm:max-w-[18rem] md:max-w-sm lg:col-span-6 lg:max-w-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1, ease }}
         >
-          <Photo
-            photo={photos.familyHome}
-            ratio={5 / 4}
-            priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="rounded-3xl"
-          />
+          <HeroMark3D />
         </motion.div>
       </div>
     </section>
   )
 }
 
-function YourNumbers() {
+// Lenders the company works with
+function Partners({ content }) {
+  const list = partners.filter((p) => p.published)
   return (
-    <section className="bg-mist py-20 md:py-28" aria-labelledby="numbers-title">
-      <div className="wrap grid gap-12 lg:grid-cols-12 lg:items-center">
-        <div className="lg:col-span-5">
-          <h2 id="numbers-title" className="font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">
-            Start with your own numbers
-          </h2>
-          <p className="mt-5 max-w-[44ch] text-lg text-slate">
-            Pick a loan type and move the sliders. You will see the monthly EMI, the interest you pay over the full tenure, and what you repay in total.
-          </p>
-          <p className="mt-4 max-w-[44ch] text-slate">
-            When you are ready, add each lender’s fees and GST to see the full cost side by side.
-          </p>
-        </div>
-        <div className="lg:col-span-6 lg:col-start-7">
-          <CostInstrument />
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function BanksCompared() {
-  return (
-    <section className="border-b border-line py-16 md:py-20" aria-labelledby="banks-title">
-      <div className="wrap grid gap-10 lg:grid-cols-12 lg:items-center">
-        <div className="lg:col-span-4">
-          <h2 id="banks-title" className="font-display text-[1.75rem] leading-tight md:text-[2.1rem]">
-            Banks in our comparison
-          </h2>
-          <p className="mt-3 text-slate">
-            Rates and fees taken from each bank’s own website, last checked {formatDate(DATA_CHECKED)}.
-          </p>
-          <TextLink to="/compare" className="mt-5">Compare these banks</TextLink>
-        </div>
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:col-span-8">
-          {lenders.map((l) => (
-            <li key={l.id}>
-              <Link
-                to={`/compare?bank=${l.id}`}
-                className="group flex flex-col items-center gap-2 rounded-2xl p-1 transition-transform duration-300 ease-[var(--ease-out-strong)] hover:-translate-y-0.5"
-              >
-                <BankLogo lender={l} size="lg" className="transition-shadow duration-300 group-hover:shadow-[var(--shadow-float)]" />
-                <span className="text-sm text-slate group-hover:text-ink">{l.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <p className="text-xs text-slate lg:col-span-12">
-          Bank names and logos are trademarks of their owners and identify whose published terms we show. Inclusion does not mean a partnership with Excellence Finance.
-        </p>
-      </div>
-    </section>
-  )
-}
-
-// The one scroll moment: the anatomy of a loan's cost draws in.
-function Anatomy() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-20% 0px' })
-  const principal = 5000000
-  const t = loanTotals(principal, 8.75, 240)
-  const pf = feeAmount({ kind: 'percent', value: 0.5, min: 5000, max: 15000, gst: true }, principal)
-  const legal = feeAmount({ kind: 'flat', value: 6500, gst: true }, principal)
-  const fees = pf.total + legal.total
-  const all = principal + t.totalInterest + fees
-
-  const cols = [
-    { title: 'Principal', color: 'bg-principal', value: principal, body: 'The amount you borrow. Interest is charged on whatever is still outstanding, so it falls as you repay.' },
-    { title: 'Interest', color: 'bg-interest', value: t.totalInterest, body: 'Over 20 years at 8.75%, interest adds up to more than the loan itself. A rate just 0.25% lower saves lakhs.' },
-    { title: 'Upfront fees', color: 'bg-fees', value: fees, body: 'Processing, legal and valuation charges, plus 18% GST. Paid at the start and easy to overlook when comparing rates.' },
-  ]
-
-  return (
-    <section ref={ref} className="py-20 md:py-28" aria-labelledby="anatomy-title">
+    <section className="border-y border-line bg-white py-14 md:py-16" aria-labelledby="partners-title">
       <div className="wrap">
-        <h2 id="anatomy-title" className="max-w-[22ch] font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">
-          A ₹50 lakh home loan can cost more than ₹1 crore over 20 years
-        </h2>
-
-        <div className="mt-12 rounded-3xl border border-line p-6 md:p-10">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-slate">Estimated total repaid</p>
-            <AnimatedNumber value={inView ? all : 0} duration={1.4} format={formatINR} className="figure text-[2rem] md:text-[2.6rem]" />
-          </div>
-          <div className="mt-5">
-            <CostBar principal={principal} interest={t.totalInterest} fees={fees} animateIn inView={inView} />
-          </div>
-          <dl className="mt-10 grid gap-8 md:grid-cols-3 md:gap-10">
-            {cols.map((c, i) => (
-              <motion.div
-                key={c.title}
-                initial={{ opacity: 0 }}
-                animate={inView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.7, delay: 0.5 + i * 0.1, ease }}
-              >
-                <dt className="flex items-center gap-2.5 font-semibold">
-                  <span className={`size-2.5 rounded-full ${c.color}`} aria-hidden />
-                  {c.title}
-                  <span className="figure ml-auto text-lg md:hidden">{formatINR(c.value)}</span>
-                </dt>
-                <dd className="mt-2 text-slate">{c.body}</dd>
-              </motion.div>
-            ))}
-          </dl>
-        </div>
-        <Note className="mt-6 max-w-[80ch]">
-          Example at an indicative 8.75% p.a., with a 0.5% processing fee capped at ₹15,000 and ₹6,500 in legal and valuation charges. Lender offers vary.
-        </Note>
+        <h2 id="partners-title" className="text-center font-display text-[1.6rem] leading-tight md:text-[2rem]">{content.title}</h2>
+        <p className="mx-auto mt-2 max-w-[60ch] text-center text-slate">{content.note}</p>
       </div>
+      <div className="mt-8">
+        <PartnerCarousel partners={list} label={content.title} />
+      </div>
+      <p className="wrap mt-2 text-center text-xs text-slate">Logos are trademarks of their respective owners.</p>
     </section>
   )
 }
 
-function LoanIndex() {
+// B. Loan services
+function Services({ content, onEnquire }) {
   return (
-    <section className="bg-mist py-20 md:py-28" aria-labelledby="loans-title">
+    <section id="services" className="py-20 md:py-28" aria-labelledby="services-title">
       <div className="wrap">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <h2 id="loans-title" className="font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">Loans we advise on</h2>
-          <TextLink to="/loans">See every loan type</TextLink>
+          <div>
+            <SectionTitle id="services-title">{content.title}</SectionTitle>
+            <p className="mt-3 max-w-[56ch] text-lg text-slate">{content.intro}</p>
+          </div>
+          <TextLink to="/loans" className="shrink-0">All loan services</TextLink>
         </div>
-        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {loans.map((l) => (
-            <li key={l.id}>
-              <Link
-                to={`/loans/${l.slug}`}
-                className="group block h-full overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-float)] transition-[transform,box-shadow] duration-300 ease-[var(--ease-out-strong)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
-              >
-                <Photo
-                  photo={photos[l.photo]}
-                  ratio={16 / 10}
-                  widths={[480, 720]}
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-                  imgClassName="group-hover:scale-[1.03]"
-                />
-                <div className="flex items-start justify-between gap-4 p-6">
-                  <div>
-                    <h3 className="font-display text-[1.45rem] leading-tight">{l.name}</h3>
-                    <p className="mt-1.5 text-slate">{l.short}</p>
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {content.items.map((s) => {
+            const loan = loanById[s.loanId]
+            if (!loan) return null
+            return (
+              <li key={s.loanId} className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-float)]">
+                <Link to={`/loans/${loan.slug}`} className="group block" tabIndex={-1} aria-hidden>
+                  <Photo
+                    photo={photos[loan.photo]}
+                    ratio={16 / 10}
+                    widths={[480, 720]}
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                    imgClassName="group-hover:scale-[1.03]"
+                  />
+                </Link>
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="font-display text-[1.5rem] leading-tight">{loan.name}</h3>
+                  <p className="mt-2 text-slate">{s.description}</p>
+                  <ul className="mt-4 space-y-1.5 text-[0.97rem]">
+                    {s.useCases.map((u) => (
+                      <li key={u} className="flex items-start gap-2">
+                        <Check aria-hidden className="mt-1 size-4 shrink-0 text-lapis" />
+                        {u}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
+                    <Button size="sm" onClick={() => onEnquire(s.loanId)} aria-label={`Enquire now about a ${loan.name.toLowerCase()}`}>
+                      Enquire Now
+                    </Button>
+                    <TextLink to={`/loans/${loan.slug}`}>
+                      Learn More<span className="sr-only"> about {loan.name.toLowerCase()}s</span>
+                    </TextLink>
                   </div>
-                  <ArrowRight aria-hidden className="mt-1.5 size-5 shrink-0 text-lapis transition-transform duration-300 ease-[var(--ease-out-strong)] group-hover:translate-x-1" />
                 </div>
-              </Link>
-            </li>
-          ))}
+              </li>
+            )
+          })}
         </ul>
       </div>
     </section>
   )
 }
 
-function ProcessStrip() {
+// C. About
+function About({ content }) {
   return (
-    <section className="py-20 md:py-28" aria-labelledby="process-title">
+    <section className="bg-mist py-20 md:py-28" aria-labelledby="about-title">
+      <div className="wrap grid gap-12 lg:grid-cols-12 lg:items-center">
+        <div className="order-last mx-auto w-full max-w-md lg:order-first lg:col-span-5 lg:max-w-none">
+          <Photo photo={photos.familyHome} ratio={4 / 5} sizes="(min-width: 1024px) 40vw, 100vw" className="rounded-3xl" />
+        </div>
+        <div className="lg:col-span-6 lg:col-start-7">
+          <SectionTitle id="about-title">{content.title}</SectionTitle>
+          <div className="mt-6 space-y-4 text-lg text-slate">
+            {content.paragraphs.map((p) => <p key={p}>{p}</p>)}
+          </div>
+          <TextLink to={content.link.href} className="mt-8">{content.link.label}</TextLink>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// D. Why choose us
+function WhyChooseUs({ content }) {
+  return (
+    <section className="py-20 md:py-28" aria-labelledby="why-title">
       <div className="wrap">
-        <h2 id="process-title" className="max-w-[24ch] font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">
-          From your first message to the lender’s decision
-        </h2>
-        <p className="mt-5 max-w-[56ch] text-lg text-slate">
-          We prepare and compare. The lender assesses and decides. At every stage you know what is happening and who is responsible.
-        </p>
-        <ol className="mt-14 grid gap-10 md:grid-cols-5 md:gap-6">
-          {steps.map((s, i) => (
+        <SectionTitle id="why-title">{content.title}</SectionTitle>
+        <ul className="mt-12 grid gap-x-12 gap-y-2 md:grid-cols-2">
+          {content.items.map((it) => {
+            const Icon = ICONS[it.icon] ?? Check
+            return (
+              <li key={it.title} className="flex gap-4 border-t border-line py-6">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sky text-lapis">
+                  <Icon aria-hidden className="size-5" />
+                </span>
+                <div>
+                  <h3 className="text-lg font-semibold">{it.title}</h3>
+                  <p className="mt-1 text-slate">{it.body}</p>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+// E. Process
+function Process({ content }) {
+  return (
+    <section className="bg-mist py-20 md:py-28" aria-labelledby="process-title">
+      <div className="wrap">
+        <SectionTitle id="process-title">{content.title}</SectionTitle>
+        <ol className="mt-12 grid gap-10 md:grid-cols-4 md:gap-6">
+          {content.steps.map((s, i) => (
             <li key={s.title}>
               <div className="flex items-center gap-3">
-                <span className="figure grid size-9 shrink-0 place-items-center rounded-full bg-ink text-sm text-white">{i + 1}</span>
-                {i < steps.length - 1 && <span className="hidden h-px flex-1 bg-line-strong md:block" aria-hidden />}
+                <span className="figure grid size-10 shrink-0 place-items-center rounded-full bg-ink text-white">{i + 1}</span>
+                {i < content.steps.length - 1 && <span className="hidden h-px flex-1 bg-line-strong md:block" aria-hidden />}
               </div>
               <h3 className="mt-5 text-lg font-semibold">{s.title}</h3>
-              <p className="mt-2 text-slate">{s.short}</p>
+              <p className="mt-2 text-slate">{s.body}</p>
             </li>
           ))}
         </ol>
-        <div className="mt-12">
-          <TextLink to="/how-it-works">Read how the process works</TextLink>
-        </div>
+        <Note className="mt-12 max-w-[80ch]">{content.note}</Note>
+        <TextLink to="/how-it-works" className="mt-6">See the process in detail</TextLink>
       </div>
     </section>
   )
 }
 
-function Commitments() {
-  const items = [
-    { title: 'We never promise approval', body: 'Only the lender approves a loan. We will not promise an outcome, a rate or a timeline we do not control.' },
-    { title: 'Every figure has a source', body: 'Each rate and fee shows where it came from and when we last checked it. If we do not know, we say so.' },
-    { title: 'We ask for very little', body: 'Your name, mobile number, city and loan type are enough to begin. No PAN, Aadhaar or documents through this website.' },
-  ]
+// F. Who we help
+function WhoWeHelp({ content }) {
   return (
-    <section className="bg-mist py-20 md:py-28" aria-labelledby="commitments-title">
-      <div className="wrap grid gap-12 lg:grid-cols-12 lg:items-center">
-        <div className="order-last lg:order-first lg:col-span-5">
-          <Photo photo={photos.adviser} ratio={4 / 5} sizes="(min-width: 1024px) 40vw, 100vw" className="rounded-3xl" />
-        </div>
-        <div className="lg:col-span-6 lg:col-start-7">
-          <h2 id="commitments-title" className="font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">
-            What you can expect from us
-          </h2>
-          <ul className="mt-10 divide-y divide-line-strong border-y border-line-strong">
-            {items.map((it) => (
-              <li key={it.title} className="py-6">
-                <h3 className="text-xl font-semibold">{it.title}</h3>
-                <p className="mt-2 text-slate">{it.body}</p>
-              </li>
-            ))}
-          </ul>
-          <TextLink to="/about" className="mt-8">More about us</TextLink>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Tools() {
-  return (
-    <section className="py-20 md:py-28" aria-labelledby="tools-title">
+    <section className="py-20 md:py-28" aria-labelledby="who-title">
       <div className="wrap">
-        <h2 id="tools-title" className="font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">Plan before you talk to us</h2>
-        <div className="mt-12 grid gap-6 lg:grid-cols-2">
-          <ToolLink
-            to="/emi-calculator"
-            title="EMI calculator"
-            body="Work out your monthly EMI, total interest and a year-by-year split of principal and interest. Your numbers carry into an enquiry."
-            points={['Any amount, rate and tenure', 'Year-by-year schedule', 'Lender charges shown separately']}
-            cta="Open the calculator"
-          />
-          <ToolLink
-            to="/compare"
-            title="Compare lenders"
-            body="See several lenders for the same amount and tenure: rate, every fee with GST, the upfront total and the estimated total cost."
-            points={['Sort by EMI, fees or total cost', 'Source and date on every offer', 'Enquire about a specific offer']}
-            cta="Start a comparison"
-          />
-        </div>
+        <SectionTitle id="who-title">{content.title}</SectionTitle>
+        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {content.items.map((it) => {
+            const Icon = ICONS[it.icon] ?? UserRound
+            return (
+              <li key={it.title} className="rounded-2xl border border-line p-6">
+                <Icon aria-hidden className="size-6 text-lapis" />
+                <h3 className="mt-4 text-lg font-semibold">{it.title}</h3>
+                <p className="mt-1.5 text-slate">{it.body}</p>
+                <p className="mt-4 flex flex-wrap gap-2">
+                  {it.loans.map((id) => loanById[id] && (
+                    <Link
+                      key={id}
+                      to={`/loans/${loanById[id].slug}`}
+                      className="press inline-flex min-h-11 items-center rounded-full bg-sky px-3.5 text-sm text-ink hover:bg-[#dde6fa]"
+                    >
+                      {loanById[id].name}
+                    </Link>
+                  ))}
+                </p>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )
 }
 
-function ToolLink({ to, title, body, points, cta }) {
+// Brief links to the separate tools (no embedded functionality)
+function Tools({ content }) {
   return (
-    <Link
-      to={to}
-      className="group flex flex-col gap-8 rounded-3xl border border-line p-8 transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-[var(--shadow-float)] md:p-10"
-    >
-      <div>
-        <h3 className="font-display text-[1.75rem] leading-tight">{title}</h3>
-        <p className="mt-3 max-w-[48ch] text-slate">{body}</p>
-      </div>
-      <ul className="space-y-2">
-        {points.map((p) => (
-          <li key={p} className="flex items-start gap-2.5">
-            <Check aria-hidden className="mt-1 size-4 shrink-0 text-lapis" />
-            {p}
-          </li>
-        ))}
-      </ul>
-      <span className="mt-auto inline-flex items-center gap-2 font-semibold text-lapis">
-        <span className="link-draw">{cta}</span>
-        <ArrowRight aria-hidden className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
-      </span>
-    </Link>
-  )
-}
-
-function FaqPreview() {
-  const items = [faqGroups[0].items[0], faqGroups[1].items[0], faqGroups[2].items[0], faqGroups[3].items[1]]
-  return (
-    <section className="border-t border-line py-20 md:py-28" aria-labelledby="faq-title">
-      <div className="wrap grid gap-10 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <h2 id="faq-title" className="font-display text-[2.1rem] leading-[1.12] md:text-[2.8rem]">Common questions</h2>
-          <TextLink to="/faqs" className="mt-6">Read all FAQs</TextLink>
-        </div>
-        <div className="lg:col-span-7 lg:col-start-6">
-          <Accordion items={items} />
-        </div>
+    <section className="border-t border-line py-14 md:py-16" aria-labelledby="tools-title">
+      <div className="wrap grid gap-8 lg:grid-cols-12 lg:items-center">
+        <h2 id="tools-title" className="font-display text-[1.6rem] leading-tight md:text-[2rem] lg:col-span-4">{content.title}</h2>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-8">
+          {content.items.map((t) => (
+            <li key={t.href}>
+              <Link to={t.href} className="group flex h-full items-center justify-between gap-4 rounded-2xl border border-line p-5 transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-[var(--shadow-float)]">
+                <span>
+                  <span className="block font-semibold">{t.title}</span>
+                  <span className="mt-0.5 block text-sm text-slate">{t.body}</span>
+                </span>
+                <ArrowRight aria-hidden className="size-5 shrink-0 text-lapis transition-transform duration-300 group-hover:translate-x-1" />
+                <span className="sr-only">{t.cta}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
 }
 
-export function Close() {
+// G. Consultation enquiry
+function Enquiry({ content, preset }) {
   const contacts = [
-    { icon: MessageCircle, label: 'WhatsApp', value: 'Business number to be added', href: site.whatsappHref },
+    site.whatsappHref && { icon: MessageCircle, label: content.whatsappLabel, value: 'WhatsApp', href: site.whatsappHref },
     { icon: Phone, label: 'Call', value: site.phoneDisplay, href: site.phoneHref },
     { icon: Mail, label: 'Email', value: site.email, href: `mailto:${site.email}` },
-  ]
+    { icon: Clock, label: 'Hours', value: site.hours },
+  ].filter(Boolean)
   return (
-    <section className="bg-sky py-20 md:py-28" aria-labelledby="close-title">
-      <div className="wrap grid gap-12 lg:grid-cols-12 lg:items-center">
-        <div className="order-last lg:order-first lg:col-span-5">
-          <Photo photo={photos.phoneCall} ratio={1} sizes="(min-width: 1024px) 40vw, 100vw" className="rounded-3xl" />
+    <section id="enquiry" className="bg-sky py-20 md:py-28" aria-labelledby="enquiry-title">
+      <div className="wrap grid gap-10 lg:grid-cols-12 lg:gap-x-12 lg:gap-y-8">
+        <div className="lg:col-span-4">
+          <SectionTitle id="enquiry-title">{content.title}</SectionTitle>
+          <p className="mt-5 text-lg text-slate">{content.intro}</p>
         </div>
-        <div className="lg:col-span-6 lg:col-start-7">
-          <h2 id="close-title" className="font-display text-[2.3rem] leading-[1.1] md:text-[3.2rem]">
-            Talk to an adviser about your loan
-          </h2>
-          <p className="mt-5 max-w-[46ch] text-lg text-slate">
-            Tell us what you need and we will call you back. {site.hours}.
-          </p>
-          <Button to="/contact" size="lg" className="mt-8">Start an enquiry</Button>
-          <ul className="mt-10 divide-y divide-line-strong border-y border-line-strong">
+        <div id="enquiry-form" className="scroll-mt-24 rounded-3xl bg-white p-6 shadow-[var(--shadow-float)] md:p-10 lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1">
+          <EnquiryForm variant="compact" preset={preset} source="homepage" />
+        </div>
+        <div className="lg:col-span-4 lg:col-start-1 lg:row-start-2">
+          <ul className="divide-y divide-line-strong border-y border-line-strong">
             {contacts.map(({ icon: Icon, label, value, href }) => {
               const inner = (
                 <>
-                  <Icon aria-hidden className="size-5 text-lapis" />
-                  <span className="text-slate">{label}</span>
-                  <span className="ml-auto text-right font-medium text-ink">{value}</span>
+                  <Icon aria-hidden className="size-5 shrink-0 text-lapis" />
+                  <span className="flex min-w-0 flex-1 flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <span className="shrink-0 text-sm text-slate sm:text-base">{label}</span>
+                    <span className="min-w-0 font-medium text-ink [overflow-wrap:anywhere] sm:text-right">{value}</span>
+                  </span>
                 </>
               )
               return (
                 <li key={label}>
                   {href ? (
-                    <a href={href} className="flex min-h-14 items-center gap-4 py-3 transition-colors hover:text-lapis">{inner}</a>
+                    <a href={href} className="flex min-h-14 items-center gap-4 py-3 transition-colors hover:text-lapis" {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{inner}</a>
                   ) : (
                     <div className="flex min-h-14 items-center gap-4 py-3">{inner}</div>
                   )}
@@ -405,20 +326,48 @@ export function Close() {
   )
 }
 
-export default function Home() {
-  useTitle(null)
+// H. FAQs
+function Faqs({ content }) {
+  return (
+    <section className="py-20 md:py-28" aria-labelledby="faq-title">
+      <div className="wrap grid gap-10 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <SectionTitle id="faq-title">{content.title}</SectionTitle>
+          <TextLink to={content.link.href} className="mt-6">{content.link.label}</TextLink>
+        </div>
+        <div className="lg:col-span-7 lg:col-start-6">
+          <Accordion items={content.items} />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default function Home({ content: override }) {
+  const content = getHomeContent(override)
+  useTitle(content.seo.title, content.seo.description)
+  const [preset, setPreset] = useState(null)
+
+  // "Enquire Now": pre-select the loan, bring the form into view, focus the first field
+  const enquire = useCallback((loanId) => {
+    setPreset({ loan: loanId, nonce: Date.now() })
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    document.getElementById('enquiry-form')?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
+    window.setTimeout(() => document.getElementById('f-name')?.focus({ preventScroll: true }), smooth ? 600 : 0)
+  }, [])
+
   return (
     <>
-      <Hero />
-      <BanksCompared />
-      <YourNumbers />
-      <Anatomy />
-      <LoanIndex />
-      <ProcessStrip />
-      <Commitments />
-      <Tools />
-      <FaqPreview />
-      <Close />
+      <Hero hero={content.hero} />
+      <Partners content={content.partners} />
+      <Services content={content.services} onEnquire={enquire} />
+      <About content={content.about} />
+      <WhyChooseUs content={content.whyChooseUs} />
+      <Process content={content.process} />
+      <WhoWeHelp content={content.whoWeHelp} />
+      <Tools content={content.tools} />
+      <Enquiry content={content.enquiry} preset={preset} />
+      <Faqs content={content.faqs} />
     </>
   )
 }

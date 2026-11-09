@@ -43,6 +43,14 @@ Chart series (validated with the dataviz checker): principal #2B4FC7, interest #
 - Every photo goes through the `Photo` component: responsive `srcset`, lazy loading (except the hero), face-aware cropping, a short fade-in, and a 1.03 zoom inside its frame when its card is hovered.
 - Each photo has descriptive alt text and no caption. The footer carries one credit line.
 
+## Responsive rules
+
+- Checked at 320, 360, 390, 414, 600, 768, 834, 1024, 1280, 1440 and 1920px: no sideways scroll, nothing off screen or spilling from its card, and every standalone control at least 44px tall.
+- Long unbroken strings (emails, links) wrap; money figures never break mid-number.
+- Buttons may wrap onto two lines below 640px instead of overflowing.
+- Contact rows, compare terms and offer rows stack label above value instead of squeezing two columns.
+- Content width is 1280px, rising to 1440px on screens 1536px and wider.
+
 ## Shape and space
 
 - Photos and large panels use a 24px radius, cards 16–20px, inputs 12px; buttons and chips are pills.
@@ -53,6 +61,8 @@ Chart series (validated with the dataviz checker): principal #2B4FC7, interest #
 ## Motion (tokens: `--ease-out-strong` cubic-bezier(0.23,1,0.32,1), `--ease-in-out-strong`, `--ease-drawer`)
 
 - **Hero entrance, once:** the headline, copy and buttons rise in a short stagger while the photograph opens from its bottom edge (a clip-path reveal).
+- **3D brand mark (home hero):** a real-time three.js version of the logo (`src/three/brandMark.js`). On load, the arrow rises and turns in and the four bars grow one after another. After that it sways slowly and tilts toward the mouse. Colours use neutral tone mapping so the brand navy, cyan and gold stay true. It loads as a separate file after first paint and pauses when off screen or in a background tab. Below 768px, without WebGL, or with reduced motion, the flat logo mark shows instead.
+- **Lender carousel:** bare logos with no cards, on a white section between hairlines, in two rows drifting in opposite directions (linear, about 45 seconds a loop). A row pauses while hovered or focused. Logos rest in greyscale and turn to full colour, scaled to 1.15, on hover. Touchscreens show colour throughout. With reduced motion, the logos sit in a still grid.
 - **The one scroll moment:** the cost-anatomy card on home. Its stacked bar draws in and the ₹ total counts up once in view.
 - **Responsive motion:** figures tween when inputs change, comparison rows re-sort with a layout animation, and accordions and fee panels expand by height.
 - **Micro-interactions:** buttons press to 0.97 over 160ms, links draw an underline, arrows nudge, cards lift 2px and photos zoom slightly on hover.

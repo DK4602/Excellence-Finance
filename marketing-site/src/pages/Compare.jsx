@@ -227,8 +227,8 @@ function OfferRow({ offer: o, amount, months, type, band, employment }) {
         o.eligibleShape ? 'border-line hover:shadow-[var(--shadow-float)]' : 'border-dashed border-line-strong'
       }`}
     >
-      <div className="grid gap-6 p-6 md:grid-cols-12 md:items-center md:p-7">
-        <div className="flex items-start gap-4 md:col-span-4">
+      <div className="grid gap-6 p-6 md:p-7">
+        <div className="flex items-start gap-4">
           <BankLogo lender={o.lender} size="sm" className="mt-0.5" />
           <div className="min-w-0">
             <p className="font-display text-[1.3rem] leading-tight">{o.lender.name}</p>
@@ -238,20 +238,20 @@ function OfferRow({ offer: o, amount, months, type, band, employment }) {
         </div>
 
         {o.eligibleShape ? (
-          <dl className="tnum grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 md:col-span-8">
+          <dl className="tnum grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
             <Stat label={rateLabel} value={`${o.rate.toFixed(2)}%`} sub={rateSub} />
             <Stat label="Indicative EMI" value={formatINR(o.totals.emi)} />
             <Stat label="Upfront fees" value={formatINR(o.upfront)} sub={feeSub} />
             <Stat label="Est. total cost" value={formatINR(o.totalCost)} sub="Interest + fees" strong />
           </dl>
         ) : o.startingOnly && o.bestCase ? (
-          <dl className="tnum grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 md:col-span-8">
+          <dl className="tnum grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
             <Stat label="Starting rate" value={`${p.advertisedMin}%`} sub="Only figure published" />
             <Stat label="EMI at starting rate" value={formatINR(o.bestCase.emi)} sub="Best case" />
             <Stat label="Upfront fees" value={formatINR(o.upfront)} sub={feeSub} />
           </dl>
         ) : (
-          <p className="text-slate md:col-span-8">{reason}. <span className="text-ink">Confirm with lender</span> or ask an adviser for alternatives.</p>
+          <p className="text-slate">{reason}. <span className="text-ink">Confirm with lender</span> or ask an adviser for alternatives.</p>
         )}
       </div>
 
@@ -325,7 +325,7 @@ function OfferRow({ offer: o, amount, months, type, band, employment }) {
                       <ul className="space-y-1.5">
                         {p.sources.map((s) => (
                           <li key={s.url}>
-                            <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1 text-lapis underline decoration-lapis/30 underline-offset-2 hover:decoration-lapis">
+                            <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 py-1 text-lapis underline decoration-lapis/30 underline-offset-2 hover:decoration-lapis">
                               {s.label}
                               <ExternalLink aria-hidden className="mt-0.5 size-3.5 shrink-0" />
                               <span className="sr-only">(opens in a new tab)</span>
@@ -352,7 +352,7 @@ function Stat({ label, value, sub, strong }) {
   return (
     <div>
       <dt className="text-xs text-slate">{label}</dt>
-      <dd className={`mt-1 ${strong ? 'figure text-[1.35rem] leading-tight' : 'text-lg font-medium'}`}>{value}</dd>
+      <dd className={`mt-1 ${strong ? 'figure text-[1.15rem] leading-tight sm:text-[1.35rem]' : 'text-lg font-medium'}`}>{value}</dd>
       {sub && <dd className="mt-0.5 text-xs text-slate">{sub}</dd>}
     </div>
   )
@@ -360,7 +360,7 @@ function Stat({ label, value, sub, strong }) {
 
 function Term({ k, v }) {
   return (
-    <div className="grid grid-cols-[minmax(0,10rem)_1fr] gap-4 border-b border-line pb-3">
+    <div className="grid gap-1 border-b border-line pb-3">
       <dt className="text-slate">{k}</dt>
       <dd className={v === NA ? 'text-slate' : ''}>{v}</dd>
     </div>

@@ -60,3 +60,6 @@ ehthumbs.db
 marketing-site/brand/banks-raw/
 marketing-site/brand/*-sheet.png
 shots/
+
+# Enquiries captured by the development stand-in endpoint (personal data)
+.dev-data/

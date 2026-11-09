@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { AnimatePresence, motion } from 'motion/react'
-import { Menu, X, Phone, Mail, MessageCircle } from 'lucide-react'
-import { nav, site } from '../data/site'
+import { Menu, X, Phone, Mail, MessageCircle, MapPin } from 'lucide-react'
+import { nav, site, ENQUIRY_HREF, consultationLabel } from '../data/site'
 import { loans } from '../data/loans'
 import { Button } from './ui'
 
@@ -54,11 +54,12 @@ function Header() {
       <div className="wrap flex h-[4.5rem] items-center justify-between gap-6 md:h-20">
         <Logo />
         <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-7 text-[0.95rem]">
+          <ul className="flex items-center gap-5 text-[0.93rem] xl:gap-7 xl:text-[0.95rem]">
             {nav.map((item) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
+                  end={item.end}
                   className={({ isActive }) =>
                     `relative py-2 transition-colors duration-200 hover:text-ink after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:bg-brass after:transition-transform after:duration-300 after:ease-[var(--ease-out-strong)] ${
                       isActive ? 'text-ink after:scale-x-100' : 'text-slate after:scale-x-0 hover:after:scale-x-100'
@@ -73,7 +74,7 @@ function Header() {
         </nav>
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <Button to="/contact" size="sm">Start an enquiry</Button>
+            <Button to={ENQUIRY_HREF} size="sm">{consultationLabel()}</Button>
           </div>
           <button
             type="button"
@@ -100,7 +101,7 @@ function Header() {
           >
             <nav aria-label="Mobile" className="wrap py-8">
               <ul className="space-y-1">
-                {[{ label: 'Home', to: '/' }, ...nav, { label: 'Contact', to: '/contact' }].map((item, i) => (
+                {nav.map((item, i) => (
                   <motion.li
                     key={item.to}
                     initial={{ opacity: 0, y: 10 }}
@@ -119,7 +120,7 @@ function Header() {
                   </motion.li>
                 ))}
               </ul>
-              <Button to="/contact" className="mt-8 w-full">Start an enquiry</Button>
+              <Button to={ENQUIRY_HREF} className="mt-8 w-full">{consultationLabel()}</Button>
             </nav>
           </motion.div>
         )}
@@ -131,21 +132,24 @@ function Header() {
 function Footer() {
   return (
     <footer className="bg-ink text-white/80">
-      <div className="wrap grid gap-12 py-16 md:grid-cols-12 md:py-20">
-        <div className="md:col-span-4">
+      <div className="wrap grid gap-x-8 gap-y-12 py-16 sm:grid-cols-2 md:py-20 lg:grid-cols-12">
+        <div className="sm:col-span-2 lg:col-span-4">
           <Logo light />
           <p className="mt-6 max-w-[34ch] text-sm leading-relaxed text-white/70">{site.role}</p>
-          <ul className="mt-6 space-y-3 text-sm">
-            <li className="flex items-center gap-3"><Mail className="size-4 text-brass" aria-hidden />{site.email}</li>
-            <li className="flex items-center gap-3"><Phone className="size-4 text-brass" aria-hidden />{site.phoneDisplay}</li>
-            <li className="flex items-center gap-3"><MessageCircle className="size-4 text-brass" aria-hidden />WhatsApp on the verified business number</li>
+          <ul className="mt-5 text-sm">
+            <FooterContact icon={Mail} href={`mailto:${site.email}`}>{site.email}</FooterContact>
+            <FooterContact icon={Phone} href={site.phoneHref}>{site.phoneDisplay}</FooterContact>
+            <FooterContact icon={MessageCircle} href={site.whatsappHref} external>
+              {site.whatsappHref ? 'Message us on WhatsApp' : 'WhatsApp number to be added'}
+            </FooterContact>
+            <FooterContact icon={MapPin}>{site.office}</FooterContact>
           </ul>
         </div>
-        <FooterCol title="Loans" links={loans.map((l) => ({ label: l.name, to: `/loans/${l.slug}` }))} />
+        <FooterCol title="Loan services" links={loans.map((l) => ({ label: l.name, to: `/loans/${l.slug}` }))} />
         <FooterCol
           title="Tools"
           links={[
-            { label: 'Compare lenders', to: '/compare' },
+            { label: 'Compare banks', to: '/compare' },
             { label: 'EMI calculator', to: '/emi-calculator' },
             { label: 'How it works', to: '/how-it-works' },
           ]}
@@ -153,16 +157,17 @@ function Footer() {
         <FooterCol
           title="Company"
           links={[
-            { label: 'About', to: '/about' },
+            { label: 'About us', to: '/about' },
+            { label: 'Contact us', to: '/contact' },
+            { label: 'Consultation enquiry', to: ENQUIRY_HREF },
             { label: 'FAQs', to: '/faqs' },
-            { label: 'Contact', to: '/contact' },
           ]}
         />
         <FooterCol
           title="Legal"
           links={[
             { label: 'Privacy policy', to: '/privacy' },
-            { label: 'Terms of use', to: '/terms' },
+            { label: 'Terms and conditions', to: '/terms' },
             { label: 'Financial disclaimer', to: '/disclaimer' },
           ]}
         />
@@ -179,14 +184,32 @@ function Footer() {
   )
 }
 
+function FooterContact({ icon: Icon, href, external, children }) {
+  const body = (
+    <>
+      <Icon className="mt-0.5 size-4 shrink-0 text-brass" aria-hidden />
+      <span className="min-w-0 [overflow-wrap:anywhere]">{children}</span>
+    </>
+  )
+  return (
+    <li>
+      {href ? (
+        <a href={href} className="flex min-h-11 items-center gap-3 transition-colors hover:text-white" {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{body}</a>
+      ) : (
+        <span className="flex min-h-11 items-center gap-3">{body}</span>
+      )}
+    </li>
+  )
+}
+
 function FooterCol({ title, links }) {
   return (
-    <div className="md:col-span-2">
+    <div className="lg:col-span-2">
       <h2 className="text-sm font-medium text-white">{title}</h2>
-      <ul className="mt-4 space-y-1 text-sm">
+      <ul className="mt-3 text-sm">
         {links.map((l) => (
           <li key={l.to}>
-            <Link to={l.to} className="inline-flex min-h-9 items-center text-white/70 transition-colors duration-200 hover:text-white">
+            <Link to={l.to} className="inline-flex min-h-11 min-w-11 items-center text-white/70 transition-colors duration-200 hover:text-white">
               <span className="link-draw">{l.label}</span>
             </Link>
           </li>
@@ -196,11 +219,26 @@ function FooterCol({ title, links }) {
   )
 }
 
+// New page → top. A link with a #section (e.g. /#enquiry) → that section,
+// retrying briefly while the destination page renders.
 function ScrollToTop() {
-  const { pathname } = useLocation()
+  const { pathname, hash, key } = useLocation()
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    // 'instant' overrides the CSS smooth scrolling meant for in-page links
+    if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+      return
+    }
+    let frame
+    let tries = 0
+    const go = () => {
+      const el = document.getElementById(decodeURIComponent(hash.slice(1)))
+      if (el) el.scrollIntoView({ block: 'start', behavior: 'instant' })
+      else if (tries++ < 30) frame = requestAnimationFrame(go)
+    }
+    go()
+    return () => cancelAnimationFrame(frame)
+  }, [pathname, hash, key])
   return null
 }
 

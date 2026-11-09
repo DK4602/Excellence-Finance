@@ -13,7 +13,7 @@ export default function EnquiryConfirmed() {
 
   const next = [
     'An adviser reviews your enquiry.',
-    `We contact you ${methodText[state.method] ?? 'by your chosen method'} to understand what you need.`,
+    methodText[state.method] ? `We contact you ${methodText[state.method]} to understand what you need.` : 'We contact you on the mobile number you gave to understand what you need.',
     'If it helps, we compare lenders with you and explain the full cost of each.',
   ]
 

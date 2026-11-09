@@ -64,7 +64,7 @@ export default function LoanDetail() {
     <>
       <header className="wrap pt-10 pb-16 md:pt-16 md:pb-24">
         <nav aria-label="Breadcrumb" className="text-sm text-slate">
-          <Link to="/loans" className="link-draw hover:text-ink">Loans</Link>
+          <Link to="/loans" className="inline-flex min-h-11 min-w-11 items-center hover:text-ink"><span className="link-draw">Loans</span></Link>
           <span className="mx-2" aria-hidden>/</span>
           <span className="text-ink">{loan.name}</span>
         </nav>
@@ -88,7 +88,7 @@ export default function LoanDetail() {
               </div>
               <div>
                 <dt className="text-sm text-slate">Calculator range</dt>
-                <dd className="figure mt-1 text-xl">{formatLakh(loan.amount.min)} to {formatLakh(loan.amount.max)}</dd>
+                <dd className="figure mt-1 text-xl whitespace-normal">{formatLakh(loan.amount.min)} to {formatLakh(loan.amount.max)}</dd>
               </div>
             </dl>
           </div>
@@ -116,7 +116,7 @@ export default function LoanDetail() {
                     <p className="font-semibold">{l.name}</p>
                     <p className="text-sm text-slate">{p.name}, {p.rateType.toLowerCase()}</p>
                   </div>
-                  <p className="figure text-lg sm:text-right">
+                  <p className="figure text-lg whitespace-normal sm:text-right">
                     {rates} <span className="text-sm font-normal text-slate">p.a.</span>
                     {p.rateBasis === 'bands' && <span className="block text-xs font-normal text-slate">By credit score</span>}
                   </p>

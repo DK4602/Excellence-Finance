@@ -41,7 +41,8 @@ Compares lenders on the whole cost: rate, processing and other fees, GST, upfron
 
 - Brand logo supplied by the user: `marketing-site/brand/logo-original.jpg` (web versions generated into `marketing-site/public/brand/`).
 - Comparison data: published rates and fees for SBI, HDFC Bank, Bank of Baroda, PNB, Bank of Maharashtra and IDFC FIRST Bank, taken from each bank's official site on 8 Nov 2026 with source links (`marketing-site/src/data/lenders.js`). Staff must re-verify before launch and on a schedule.
-- No confirmed lender partnerships, reviews, statistics, accreditations, addresses or phone numbers. Bank names identify published terms only and must not be presented as partners. Contact details are placeholders.
+- Lenders the business works with, confirmed by the owner on 9 Nov 2026 (`marketing-site/src/data/partners.js`): PNB, ICICI Bank, Bank of Baroda, HDFC Bank, Tata Capital Housing Finance, IDFC FIRST Bank, Bank of India, Indian Bank, Central Bank of India, Indian Overseas Bank, UCO Bank, Bank of Maharashtra, L&T Finance, Kotak Mahindra Bank, YES BANK, IDBI Bank, Bajaj Housing Finance, Piramal Finance, SMFG India Home Finance. SBI appears in the rate comparison but is not on this list.
+- No reviews, statistics, accreditations, address or phone number yet. Whether consultations are free is unconfirmed (`site.consultationIsFree`). Contact details are placeholders.
 
 ## Product Principles
 

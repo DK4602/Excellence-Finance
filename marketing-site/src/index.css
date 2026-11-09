@@ -51,6 +51,17 @@
     background: var(--color-porcelain);
     font-size: 1.0625rem;
     line-height: 1.6;
+    /* Long unbroken strings (emails, URLs) wrap instead of widening the page */
+    overflow-wrap: break-word;
+  }
+  /* Grid columns may shrink below their longest word, so one stubborn
+     element can never push the page wider than the screen */
+  .grid > * {
+    min-width: 0;
+  }
+  a[href^='mailto:'],
+  a[href^='tel:'] {
+    overflow-wrap: anywhere;
   }
   ::selection {
     background: var(--color-brass-pale);
@@ -97,6 +108,7 @@
   font-weight: 650;
   letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap; /* figures never break mid-number */
 }
 
 @utility tnum {
@@ -113,6 +125,10 @@
   }
   @media (width >= 80rem) {
     padding-inline: 3.5rem;
+  }
+  /* A little more room on very large screens */
+  @media (width >= 96rem) {
+    max-width: 1440px;
   }
 }
 
@@ -133,7 +149,7 @@
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 28px;
+  height: 44px; /* full 44px touch target; the visible track stays 3px */
   background: transparent;
   cursor: pointer;
   --pct: 50%;
@@ -200,6 +216,59 @@
   transform: scale(0.97);
 }
 
+/* Smooth in-page jumps (e.g. to the enquiry form) when motion is welcome */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Partner logo strip: constant linear motion, paused on hover, focus or button */
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee {
+  overflow: hidden;
+  padding-block: 0.75rem;
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 80s) linear infinite;
+}
+.marquee__track--reverse {
+  animation-direction: reverse;
+}
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+/* Logos rest in greyscale and come to full colour, slightly larger, on hover.
+   Only on devices that can hover; touch screens show colour throughout. */
+.logo-tile {
+  transition: transform 300ms var(--ease-out-strong);
+}
+@media (hover: hover) and (pointer: fine) {
+  .logo-tile .logo-tile__art {
+    filter: grayscale(1);
+    opacity: 0.6;
+    transition:
+      filter 300ms ease,
+      opacity 300ms ease;
+  }
+  .logo-tile:hover {
+    transform: scale(1.15);
+  }
+  .logo-tile:hover .logo-tile__art {
+    filter: none;
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -207,5 +276,8 @@
     transition-duration: 1ms !important;
     animation-duration: 1ms !important;
     scroll-behavior: auto !important;
+  }
+  .marquee__track {
+    animation: none;
   }
 }

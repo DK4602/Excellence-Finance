@@ -11,15 +11,25 @@ export const site = {
   area: 'Serving clients across India',
   office: 'Office address to be confirmed',
   hours: 'Monday to Saturday, 10:00 to 19:00 IST',
+  // Set to true only if the first consultation is genuinely free of charge.
+  // While null, CTAs avoid the word "free" and the fee FAQ stays unpublished.
+  consultationIsFree: null,
+  // Plain-language statement of any advisory fee, e.g. 'Our first consultation is free…'
+  consultationFeeNote: null,
 }
 
+// Where the consultation enquiry lives. The homepage hosts the form.
+export const ENQUIRY_HREF = '/#enquiry'
+
+export const consultationLabel = () => (site.consultationIsFree === true ? 'Get Free Consultation' : 'Request a Consultation')
+
 export const nav = [
-  { label: 'Loans', to: '/loans' },
-  { label: 'Compare lenders', to: '/compare' },
-  { label: 'EMI calculator', to: '/emi-calculator' },
-  { label: 'How it works', to: '/how-it-works' },
-  { label: 'About', to: '/about' },
-  { label: 'FAQs', to: '/faqs' },
+  { label: 'Home', to: '/', end: true },
+  { label: 'Loan Services', to: '/loans' },
+  { label: 'Compare Banks', to: '/compare' },
+  { label: 'EMI Calculator', to: '/emi-calculator' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Contact Us', to: '/contact' },
 ]
 
 export const scoreBands = [
