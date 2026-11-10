@@ -11,17 +11,31 @@
 // does not imply a partnership with Excellence Finance.
 
 const CHECKED = '2026-11-08'
+// Banks added from the carousel list were read from their official sites on this date
+const CHECKED_2 = '2026-11-10'
 
-// Logos: from each bank's official website, except SBI (vector of its
-// keyhole symbol, Wikimedia Commons) and PNB (vector, Wikimedia Commons,
-// matching the mark on pnb.bank.in). Trademarks of their respective owners.
+// Logos: from each bank's official website, except PNB (vector from
+// Wikimedia Commons, matching the mark on pnb.bank.in). Trademarks of their
+// respective owners.
 export const lenders = [
-  { id: 'sbi', name: 'State Bank of India', short: 'SBI', kind: 'Public sector bank', logo: '/banks/sbi.svg', logoMarkOnly: true },
   { id: 'hdfc', name: 'HDFC Bank', short: 'HDFC Bank', kind: 'Private sector bank', logo: '/banks/hdfc.svg' },
   { id: 'bob', name: 'Bank of Baroda', short: 'Bank of Baroda', kind: 'Public sector bank', logo: '/banks/bob.png' },
   { id: 'pnb', name: 'Punjab National Bank', short: 'PNB', kind: 'Public sector bank', logo: '/banks/pnb.svg' },
   { id: 'bom', name: 'Bank of Maharashtra', short: 'Bank of Maharashtra', kind: 'Public sector bank', logo: '/banks/bom.svg' },
   { id: 'idfc', name: 'IDFC FIRST Bank', short: 'IDFC FIRST Bank', kind: 'Private sector bank', logo: '/banks/idfc.svg' },
+  { id: 'icici', name: 'ICICI Bank', short: 'ICICI Bank', kind: 'Private sector bank', logo: '/banks/icici.svg' },
+  { id: 'kotak', name: 'Kotak Mahindra Bank', short: 'Kotak', kind: 'Private sector bank', logo: '/banks/kotak.svg' },
+  { id: 'indian-bank', name: 'Indian Bank', short: 'Indian Bank', kind: 'Public sector bank', logo: '/banks/indian-bank.png' },
+  { id: 'central-bank', name: 'Central Bank of India', short: 'Central Bank', kind: 'Public sector bank', logo: '/banks/central-bank.jpg' },
+  { id: 'iob', name: 'Indian Overseas Bank', short: 'IOB', kind: 'Public sector bank', logo: '/banks/iob.svg' },
+  { id: 'uco', name: 'UCO Bank', short: 'UCO Bank', kind: 'Public sector bank', logo: '/banks/uco.png' },
+  { id: 'idbi', name: 'IDBI Bank', short: 'IDBI Bank', kind: 'Private sector bank', logo: '/banks/idbi.svg' },
+  { id: 'yes', name: 'YES BANK', short: 'YES BANK', kind: 'Private sector bank', logo: '/banks/yes.png' },
+  { id: 'tata-capital', name: 'Tata Capital Housing Finance', short: 'Tata Capital', kind: 'Housing finance company', logo: '/banks/tata-capital.svg' },
+  { id: 'bajaj', name: 'Bajaj Housing Finance', short: 'Bajaj Housing', kind: 'Housing finance company', logo: '/banks/bajaj.svg' },
+  { id: 'lt-finance', name: 'L&T Finance', short: 'L&T Finance', kind: 'Non-bank lender', logo: '/banks/lt-finance.svg' },
+  { id: 'piramal', name: 'Piramal Finance', short: 'Piramal', kind: 'Non-bank lender', logo: '/banks/piramal-mark.png', logoMarkOnly: true },
+  { id: 'smfg', name: 'SMFG India Home Finance', short: 'SMFG Grihashakti', kind: 'Housing finance company', logo: '/banks/smfg.svg' },
 ]
 
 // Fee helpers
@@ -33,10 +47,6 @@ const waived = (label, note, until) => ({ label, kind: 'waived', note, until })
 const FLOATING_PREPAY = 'Nil for individual borrowers on a floating rate'
 
 const src = {
-  sbiHome: { label: 'SBI home loan rate card (w.e.f. 15 Oct 2026)', url: 'https://sbi.bank.in/web/interest-rates/interest-rates/loan-schemes-interest-rates/home-loans-interest-rates-current' },
-  sbiFee: { label: 'SBI home loan processing fee card', url: 'https://homeloans.sbi.bank.in/downloads/Processing-Fee-Card-Rates.pdf' },
-  sbiAuto: { label: 'SBI auto loan interest rates', url: 'https://sbi.bank.in/web/interest-rates/interest-rates/loan-schemes-interest-rates/auto-loans' },
-  sbiPersonal: { label: 'SBI personal loan interest rates', url: 'https://sbi.bank.in/web/interest-rates/interest-rates/loan-schemes-interest-rates/personal-loans-schemes' },
   hdfcHome: { label: 'HDFC Bank home loan interest rates', url: 'https://homeloans.hdfc.bank.in/checklist/home-loan-interest-rates' },
   hdfcHomeFee: { label: 'HDFC Bank home loan charges', url: 'https://homeloans.hdfc.bank.in/checklist/documents-charges' },
   hdfcPersonal: { label: 'HDFC Bank personal loan rates and charges (Nov 2026)', url: 'https://www.hdfc.bank.in/personal-loan/interest-rates-and-charges' },
@@ -58,25 +68,25 @@ const src = {
   idfcLap: { label: 'IDFC FIRST Bank loan against property rates', url: 'https://www.idfcfirst.bank.in/personal-banking/loans/loan-against-property/lap-interest-rate' },
   idfcLapFee: { label: 'IDFC FIRST Bank loan against property charges', url: 'https://www.idfcfirst.bank.in/personal-banking/loans/loan-against-property/fees-and-charges' },
   idfcPersonal: { label: 'IDFC FIRST Bank personal loan rates and charges', url: 'https://www.idfcfirst.bank.in/personal-banking/loans/personal-loan/personal-loan-interest-rates' },
+  iciciHome: { label: 'ICICI Bank home loan interest rates (valid to 30 Nov 2026)', url: 'https://www.icici.bank.in/personal-banking/loans/home-loan/interest-rates' },
+  kotakHome: { label: 'Kotak Mahindra Bank home loan interest rates', url: 'https://www.kotak.bank.in/en/personal-banking/loans/home-loan/interest-rates.html' },
+  indianRates: { label: 'Indian Bank interest rates on personal segment loans: floating (updated 27 Oct 2026)', url: 'https://indianbank.bank.in/en/interest-rates-on-personal-segment-loan-products' },
+  centralRates: { label: 'Central Bank of India rate of interest for retail schemes (updated 8 Oct 2026)', url: 'https://centralbank.bank.in/en/retail-scheme-interest' },
+  iobRates: { label: 'Indian Overseas Bank lending interest rates (updated 13 Oct 2026)', url: 'https://www.iob.bank.in/en/lending-interest-rates' },
+  ucoHome: { label: 'UCO Bank STP Home Loan (updated 27 Oct 2026)', url: 'https://www.uco.bank.in/stp-home-loan' },
+  idbiRates: { label: 'IDBI Bank interest rates: retail loans', url: 'https://www.idbi.bank.in/interest-rates.aspx' },
+  yesHome: { label: 'YES BANK home loan', url: 'https://www.yes.bank.in/personal-banking/yes-individual/loans/home-loan' },
+  tataHome: { label: 'Tata Capital home loan rates and charges', url: 'https://www.tatacapital.com/home-loan/rates-and-charges.html' },
+  bajajHome: { label: 'Bajaj Housing Finance home loan', url: 'https://www.bajajhousingfinance.in/housing-loan' },
+  ltHome: { label: 'L&T Finance home loan', url: 'https://www.ltfinance.com/home-loan' },
+  piramalHome: { label: 'Piramal Finance home loan interest rates', url: 'https://www.piramalfinance.com/home-loan/home-loan-interest-rates' },
+  smfgHome: { label: 'SMFG Grihashakti home loan interest rates', url: 'https://www.grihashakti.com/home-loan-interest-rates.aspx' },
 }
 
 const PNB_CAMPAIGN = { effective: '2026-10-01', validUntil: '2026-12-31' }
 
 export const products = [
   // ───────────── Home loans ─────────────
-  {
-    id: 'sbi-home', lenderId: 'sbi', category: 'home', name: 'SBI Home Loan (Term Loan)',
-    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.5, range: [7.5, 8.8],
-    maxTenure: 360,
-    fees: [pct('Processing fee', 0.35, { min: 5000, max: 15000 })],
-    prepayment: FLOATING_PREPAY, late: null,
-    conditions: [
-      'Linked to SBI’s External Benchmark Lending Rate, currently 8.15%. SBI prices within this range by CIBIL score but does not publish the bands.',
-      'Additional 0.10% for non-salaried customers with a CIBIL score below 825.',
-      'Processing fee shown is for salaried customers (maximum ₹18,000 for non-salaried).',
-    ],
-    sources: [src.sbiHome, src.sbiFee], effective: '2026-10-15', verified: CHECKED, status: 'published',
-  },
   {
     id: 'hdfc-home', lenderId: 'hdfc', category: 'home', name: 'HDFC Bank Home Loan (adjustable rate)',
     rateType: 'Floating', rateBasis: 'range', advertisedMin: 8.0, range: [8.0, 13.45],
@@ -151,15 +161,6 @@ export const products = [
   },
 
   // ───────────── Personal loans ─────────────
-  {
-    id: 'sbi-pl', lenderId: 'sbi', category: 'personal', name: 'SBI Xpress Credit',
-    rateType: 'Floating', rateBasis: 'range', advertisedMin: 10.0, range: [10.0, 15.0],
-    maxTenure: null,
-    fees: [unknown('Processing fee')],
-    prepayment: null, late: null,
-    conditions: ['Spread of 1.25% to 6.25% over SBI’s 2-year MCLR.', 'Primarily for salaried customers.'],
-    sources: [src.sbiPersonal], effective: null, verified: CHECKED, status: 'published',
-  },
   {
     id: 'hdfc-pl', lenderId: 'hdfc', category: 'personal', name: 'HDFC Bank Personal Loan',
     rateType: 'Fixed', rateBasis: 'range', advertisedMin: 9.99, range: [9.99, 24.0],
@@ -242,15 +243,6 @@ export const products = [
 
   // ───────────── Loan against property ─────────────
   {
-    id: 'sbi-lap', lenderId: 'sbi', category: 'lap', name: 'SBI Loan Against Property (P-LAP)',
-    rateType: 'Floating', rateBasis: 'range', advertisedMin: 9.2, range: [9.2, 10.75],
-    maxTenure: null,
-    fees: [unknown('Processing fee')],
-    prepayment: FLOATING_PREPAY, late: null,
-    conditions: ['Linked to SBI’s EBLR (8.15%) and priced by CIBIL score; bands are not published.'],
-    sources: [src.sbiHome], effective: '2026-10-15', verified: CHECKED, status: 'published',
-  },
-  {
     id: 'bob-lap', lenderId: 'bob', category: 'lap', name: 'Baroda Mortgage Loan',
     rateType: 'Floating', rateBasis: 'range', advertisedMin: 9.15, range: [9.15, 11.75],
     maxTenure: 120,
@@ -306,20 +298,6 @@ export const products = [
   },
 
   // ───────────── Vehicle (new car) ─────────────
-  {
-    id: 'sbi-car', lenderId: 'sbi', category: 'vehicle', name: 'SBI Car Loan',
-    rateType: 'Fixed', rateBasis: 'bands', advertisedMin: 8.55, range: [8.65, 9.5],
-    bands: { '800+': 8.65, '750-799': 9.15, '700-749': 9.4, '650-699': 9.5, 'below-650': null },
-    shortTenure: { upTo: 60, delta: -0.1 },
-    maxTenure: 84,
-    fees: [unknown('Processing fee')],
-    prepayment: null, late: null,
-    conditions: [
-      'Bands shown are for tenures above 5 years; 3 to 5 year loans are 0.10% lower.',
-      'SBI splits 750–799 into finer bands (775–799 at 8.80%); the higher figure is shown.',
-    ],
-    sources: [src.sbiAuto], effective: null, verified: CHECKED, status: 'published',
-  },
   {
     id: 'hdfc-car', lenderId: 'hdfc', category: 'vehicle', name: 'HDFC Bank New Car Loan',
     rateType: 'Fixed', rateBasis: 'from', advertisedMin: 8.4, range: [8.4, null],
@@ -404,7 +382,326 @@ export const products = [
     conditions: ['Campaign rates valid 1 Oct to 31 Dec 2026.', 'Rates for loan-to-value up to 80%.'],
     sources: [src.pnbRates, src.pnbFees], ...PNB_CAMPAIGN, verified: CHECKED, status: 'published',
   },
+  // ─────────── Banks added from the lender carousel (read 10 Nov 2026) ───────────
+  // Fees a bank does not publish on the page read are left unknown, so they
+  // show as "Confirm" and never make an offer look cheaper than it is.
+
+  // ICICI Bank
+  {
+    id: 'icici-home', lenderId: 'icici', category: 'home', name: 'ICICI Bank Home Loan',
+    rateType: 'Floating', rateBasis: 'bands', bandFallback: 'range', advertisedMin: 8.75, range: [8.75, 9.9],
+    bands: { '800+': 8.75, '750-799': 8.75, '700-749': null, '650-699': null, 'below-650': null },
+    maxTenure: null,
+    fees: [pct('Processing fee', 0.5)],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: [
+      'Score-based rates are published for 750 and above (salaried 8.75%; self-employed 8.85% for 750–800). Below 750 the rate is estimated within the standard range.',
+      'Standard range for salaried borrowers: 8.75%–9.65% up to ₹35 lakh, 8.75%–9.80% for ₹35–75 lakh, 8.75%–9.90% above ₹75 lakh. Self-employed borrowers pay up to 0.15% more at the top of each slab.',
+      'Pre-approved customers applying digitally may be offered 7.80%, subject to bureau score.',
+      'Rates linked to the repo rate (5.50% from 8 Oct 2026) and valid until 30 Nov 2026.',
+    ],
+    sources: [src.iciciHome], effective: null, validUntil: '2026-11-30', verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'icici-lap', lenderId: 'icici', category: 'lap', name: 'ICICI Bank Loan Against Property',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 10.85, range: [10.85, 12.5],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: [
+      'Published by loan slab: 11.35%–12% up to ₹50 lakh, 11.10%–11.75% for ₹50 lakh–₹1 crore, 10.85%–11.50% above ₹1 crore (salaried or priority-sector self-employed).',
+      'Self-employed borrowers outside priority sector pay 0.50% more in each slab.',
+      'Rates linked to the repo rate and valid until 30 Nov 2026.',
+    ],
+    sources: [src.iciciHome], effective: null, validUntil: '2026-11-30', verified: CHECKED_2, status: 'published',
+  },
+
+  // Kotak Mahindra Bank
+  {
+    id: 'kotak-home', lenderId: 'kotak', category: 'home', name: 'Kotak Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 7.6, range: [7.6, null],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: [
+      'The bank publishes a starting rate only (7.60% onwards, salaried and self-employed, repo rate 5.50%). Your rate depends on your profile.',
+      'Switching an existing floating loan to a fixed rate is priced from 12% p.a.',
+    ],
+    sources: [src.kotakHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Indian Bank
+  {
+    id: 'indian-home', lenderId: 'indian-bank', category: 'home', name: 'IB Home Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.35, range: [7.35, 8.8],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: ['The bank publishes a range only. Your rate within it depends on your profile and credit score.'],
+    sources: [src.indianRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'indian-lap', lenderId: 'indian-bank', category: 'lap', name: 'Ind Mortgage (term loan)',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 9.2, range: [9.2, 10.6],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Range for loans up to ₹7.50 crore; larger loans are priced 9.25%–11.10%. The overdraft version is priced 10.20%–12.10%.'],
+    sources: [src.indianRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'indian-car', lenderId: 'indian-bank', category: 'vehicle', name: 'IB Vehicle Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.75, range: [7.75, 9.1],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Range for new vehicles. Used cars are priced 9.80%–11.90%.'],
+    sources: [src.indianRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'indian-pl', lenderId: 'indian-bank', category: 'personal', name: 'Indian Bank Online Personal Loan (salaried)',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 11.3, range: [11.3, 11.3],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['A single published rate for salaried customers. The bank’s clean loan for salaried borrowers is priced 9.90%–10.40% as a term loan.'],
+    sources: [src.indianRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Central Bank of India
+  {
+    id: 'central-home', lenderId: 'central-bank', category: 'home', name: 'Cent Home',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.45, range: [7.45, 9.0],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: [
+      'Priced by credit score within RBLR – 1.05% to RBLR + 0.50% (RBLR 8.50%); the bank does not publish the rate for each score.',
+      'Women borrowers can apply under Cent Grih Lakshmi at 7.25%–8.50%.',
+    ],
+    sources: [src.centralRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'central-lap', lenderId: 'central-bank', category: 'lap', name: 'Cent Mortgage',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 8.9, range: [8.9, 12.5],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Priced by credit score within RBLR + 0.40% to RBLR + 4.00%.'],
+    sources: [src.centralRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'central-car', lenderId: 'central-bank', category: 'vehicle', name: 'Cent Vehicle (four-wheeler)',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.9, range: [7.9, 9.55],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Priced by credit score. Electric cars under Cent Go Green are priced 7.85%–9.50%.'],
+    sources: [src.centralRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'central-pl', lenderId: 'central-bank', category: 'personal', name: 'Cent Personal',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 11.5, range: [11.5, 12.0],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Published as 11.50% or 12.00%, set by the bank’s internal risk rating rather than your credit score.'],
+    sources: [src.centralRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Indian Overseas Bank
+  {
+    id: 'iob-home', lenderId: 'iob', category: 'home', name: 'IOB Subhagruha Housing Loan',
+    rateType: 'Floating', rateBasis: 'bands', advertisedMin: 7.45, range: [7.45, 8.45],
+    bands: { '800+': 7.45, '750-799': 7.8, '700-749': 8.2, '650-699': 8.45, 'below-650': null },
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: [
+      'Rates for salaried borrowers; non-salaried borrowers pay 0.10% more.',
+      'Within a band the bank may price lower (775–799 at 7.50%, 725–749 at 8.10%); the higher figure is shown.',
+      'The 650–699 figure is the bank’s rate for 680–699. Scores below 680 are not listed.',
+      'Linked to the bank’s RLLR of 8.35% (from 8 Oct 2026).',
+    ],
+    sources: [src.iobRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'iob-car', lenderId: 'iob', category: 'vehicle', name: 'IOB Vehicle Loan (four-wheeler)',
+    rateType: 'Floating', rateBasis: 'bands', advertisedMin: 7.85, range: [7.85, 8.85],
+    bands: { '800+': 7.85, '750-799': 7.95, '700-749': 8.1, '650-699': 8.85, 'below-650': null },
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: [
+      'Within a band the bank may price lower (775–799 at 7.90%, 725–749 at 8.00%); the higher figure is shown.',
+      'The 650–699 figure is the bank’s rate for 680–699. Scores below 680 are not listed.',
+    ],
+    sources: [src.iobRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'iob-pl', lenderId: 'iob', category: 'personal', name: 'IOB Personal Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 10.5, range: [10.5, 13.9],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: [
+      'Priced by credit score and by the bank’s employer category (A, B or C): 10.50%–13.25% in category A, up to 13.90% in category C.',
+      'Scores below 680 are not listed.',
+    ],
+    sources: [src.iobRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // UCO Bank
+  {
+    id: 'uco-home', lenderId: 'uco', category: 'home', name: 'UCO Home Loan',
+    rateType: 'Floating', rateBasis: 'bands', advertisedMin: 7.4, range: [7.4, 9.5],
+    bands: { '800+': 7.6, '750-799': 7.8, '700-749': 8.1, '650-699': 9.1, 'below-650': 9.5 },
+    maxTenure: 360,
+    fees: [waived('Processing fee', 'Presently waived (normally 0.50%, min ₹1,500, max ₹15,000). Documentation charges are nil.', null)],
+    prepayment: FLOATING_PREPAY, late: '2% p.a. on the amount in default, for an EMI one month or more late',
+    conditions: [
+      'Within the 800+ band the bank prices lower for higher scores (825–849 at 7.50%, above 850 at 7.40%); 7.60% is shown.',
+      'A further 0.10% may be allowed on takeovers from another lender, and 0.05% for women borrowers.',
+      'The page states a minimum score of 650, though it also prices 600–649 at 9.50%.',
+      'Linked to the UCO Float Rate of 8.30%.',
+    ],
+    sources: [src.ucoHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  // IDBI Bank
+  {
+    id: 'idbi-home', lenderId: 'idbi', category: 'home', name: 'IDBI Bank Home Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.4, range: [7.4, 10.0],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: [
+      'Range for salaried and self-employed professionals. Self-employed non-professionals are priced 7.60%–11.50%.',
+      'Linked to the bank’s repo-linked lending rate for retail loans (RLLR SRA 8.15%, as stated on the page).',
+    ],
+    sources: [src.idbiRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'idbi-lap', lenderId: 'idbi', category: 'lap', name: 'IDBI Bank Mortgage Loan (residential property)',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 8.8, range: [8.8, 10.75],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Against commercial property the range is 9.30%–11.00%.'],
+    sources: [src.idbiRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'idbi-car', lenderId: 'idbi', category: 'vehicle', name: 'IDBI Bank Auto Loan (new car)',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.75, range: [7.75, 8.9],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Certified pre-owned cars are priced 10.40%–11.00%.'],
+    sources: [src.idbiRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'idbi-pl', lenderId: 'idbi', category: 'personal', name: 'IDBI Bank Personal Loan',
+    rateType: 'Fixed', rateBasis: 'range', advertisedMin: 11.0, range: [11.0, 15.5],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['Fixed rate. The bank publishes a range only.'],
+    sources: [src.idbiRates], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // YES BANK
+  {
+    id: 'yes-home', lenderId: 'yes', category: 'home', name: 'YES BANK Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 8.65, range: [8.65, null],
+    maxTenure: null,
+    fees: [pct('Processing fee', 1, { min: 10000 })],
+    prepayment: FLOATING_PREPAY, late: null,
+    conditions: ['The bank publishes a starting rate only (8.65% onwards). Your rate depends on your profile.'],
+    sources: [src.yesHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Tata Capital Housing Finance
+  {
+    id: 'tata-home', lenderId: 'tata-capital', category: 'home', name: 'Tata Capital Home Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 7.99, range: [7.99, 13.0],
+    maxTenure: null, amount: [500000, 75000000],
+    fees: [pct('Processing fee', 3, { upTo: true })],
+    prepayment: null, late: '2% per month (24% p.a.) on the defaulted EMI, plus ₹700 per instrument',
+    conditions: [
+      'Range for salaried borrowers; self-employed borrowers are priced 8.25%–13%.',
+      'Loans of ₹5 lakh to ₹7.5 crore. Linked to the lender’s retail prime lending rate (10.90% for customers onboarded from 1 Nov 2026).',
+    ],
+    sources: [src.tataHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'tata-lap', lenderId: 'tata-capital', category: 'lap', name: 'Tata Capital Home Equity Loan',
+    rateType: 'Floating', rateBasis: 'range', advertisedMin: 9.5, range: [9.5, 17.7],
+    maxTenure: null,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['A loan against a property you own. Same range for salaried and self-employed borrowers, for any amount.'],
+    sources: [src.tataHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Bajaj Housing Finance
+  {
+    id: 'bajaj-home', lenderId: 'bajaj', category: 'home', name: 'Bajaj Housing Finance Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 7.5, range: [7.5, null],
+    maxTenure: 480,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: [
+      'The lender publishes a starting rate only (7.50% for salaried applicants). Your rate depends on your profile.',
+      'Tenure up to 40 years and loans up to ₹15 crore, subject to eligibility.',
+    ],
+    sources: [src.bajajHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+  {
+    id: 'bajaj-bt', lenderId: 'bajaj', category: 'transfer', name: 'Bajaj Housing Finance Balance Transfer',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 7.6, range: [7.6, null],
+    maxTenure: 480,
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['The lender publishes a starting rate only (7.60% for salaried applicants).', 'Your current lender cannot charge you for closing a floating-rate home loan.'],
+    sources: [src.bajajHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // L&T Finance
+  {
+    id: 'lt-home', lenderId: 'lt-finance', category: 'home', name: 'L&T Finance Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 7.75, range: [7.75, null],
+    maxTenure: 360,
+    fees: [pct('Processing fee', 3, { upTo: true }), flat('Login fee', 5000, { gst: false, upTo: true })],
+    prepayment: null, late: 'Up to 2% per month on the overdue EMI, plus taxes',
+    conditions: [
+      'The lender publishes a starting rate only (7.75% floating). Your rate depends on your profile.',
+      'Loans up to ₹10 crore; the login fee is non-refundable and includes taxes.',
+    ],
+    sources: [src.ltHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // Piramal Finance
+  {
+    id: 'piramal-home', lenderId: 'piramal', category: 'home', name: 'Piramal Finance Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 9.99, range: [9.99, null],
+    maxTenure: 360, amount: [300000, 20000000],
+    fees: [unknown('Processing fee')],
+    prepayment: null, late: null,
+    conditions: ['The lender publishes a starting rate only (9.99%) for every loan slab from ₹3 lakh to ₹2 crore.'],
+    sources: [src.piramalHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
+
+  // SMFG India Home Finance
+  {
+    id: 'smfg-home', lenderId: 'smfg', category: 'home', name: 'SMFG Grihashakti Home Loan',
+    rateType: 'Floating', rateBasis: 'from', advertisedMin: 9.25, range: [9.25, null],
+    maxTenure: null,
+    fees: [pct('Processing fee', 3, { upTo: true })],
+    prepayment: null, late: '2% per month on the overdue EMI, day by day',
+    conditions: ['The lender publishes a starting rate only: 9.25% for salaried and 9.75% for self-employed applicants.'],
+    sources: [src.smfgHome], effective: null, verified: CHECKED_2, status: 'published',
+  },
 ]
 
 export const lenderById = Object.fromEntries(lenders.map((l) => [l.id, l]))
 export const DATA_CHECKED = CHECKED
+export const DATA_CHECKED_UNTIL = CHECKED_2

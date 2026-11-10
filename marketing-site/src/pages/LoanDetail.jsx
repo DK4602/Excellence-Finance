@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { Check } from 'lucide-react'
 import { loanBySlug, loans } from '../data/loans'
-import { products, lenderById, DATA_CHECKED } from '../data/lenders'
+import { products, lenderById, DATA_CHECKED, DATA_CHECKED_UNTIL } from '../data/lenders'
 import { formatDate, formatINR, formatLakh, formatTenure, loanTotals } from '../lib/finance'
-import { Button, Note, TextLink, DataBadge } from '../components/ui'
+import { Button, Note, TextLink, DataBadge, checkedLabel } from '../components/ui'
 import { RangeField } from '../components/fields'
 import AnimatedNumber from '../components/AnimatedNumber'
 import Photo from '../components/Photo'
@@ -13,6 +13,15 @@ import { photos } from '../data/photos'
 import Accordion from '../components/Accordion'
 import { useTitle } from '../lib/useTitle'
 import NotFound from './NotFound'
+
+// Every loan page leads with its photograph
+function LoanVisual({ loan }) {
+  return (
+    <div className="mt-10">
+      <Photo photo={photos[loan.photo]} ratio={16 / 9} priority sizes="(min-width: 1024px) 55vw, 100vw" className="size-full rounded-3xl" />
+    </div>
+  )
+}
 
 function QuickEstimate({ loan, advertisedMin }) {
   const [amount, setAmount] = useState(loan.amount.default)
@@ -72,13 +81,7 @@ export default function LoanDetail() {
           <div className="lg:col-span-7">
             <h1 className="font-display text-[2.6rem] leading-[1.05] md:text-[4rem]">{loan.name}</h1>
             <p className="mt-6 max-w-[48ch] text-xl text-slate">{loan.short}</p>
-            <Photo
-              photo={photos[loan.photo]}
-              ratio={16 / 9}
-              priority
-              sizes="(min-width: 1024px) 55vw, 100vw"
-              className="mt-10 rounded-3xl"
-            />
+            <LoanVisual loan={loan} />
             <h2 className="mt-10 text-lg font-semibold text-ink">Who it may suit</h2>
             <p className="mt-2 max-w-[60ch] text-lg text-slate">{loan.suits}</p>
             <dl className="mt-8 grid max-w-xl grid-cols-2 gap-6 border-t border-line pt-6">
@@ -94,7 +97,7 @@ export default function LoanDetail() {
           </div>
           <div className="lg:sticky lg:top-28 lg:col-span-5 lg:self-start">
             <QuickEstimate loan={loan} advertisedMin={advertisedMin} />
-            <div className="mt-4"><DataBadge date={DATA_CHECKED} /></div>
+            <div className="mt-4"><DataBadge date={DATA_CHECKED} until={DATA_CHECKED_UNTIL} /></div>
           </div>
         </div>
       </header>
@@ -125,7 +128,7 @@ export default function LoanDetail() {
             })}
           </ul>
           <p className="mt-4 text-xs text-slate">
-            From each bank’s website, checked {formatDate(DATA_CHECKED)}. Bank names and logos are trademarks of their owners; inclusion does not imply a partnership.
+            From each lender’s own website, checked {checkedLabel(DATA_CHECKED, DATA_CHECKED_UNTIL)}. Lender names and logos are trademarks of their owners.
           </p>
         </section>
       )}

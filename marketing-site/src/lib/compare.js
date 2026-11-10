@@ -17,7 +17,12 @@ export function rateFor(product, band, months) {
       basis = 'unknown-score'
     } else {
       rate = product.bands[band] ?? null
-      if (rate == null) basis = 'band-not-offered'
+      // Some banks publish score rates only for the top bands and a range for
+      // everyone else: estimate those bands within the range instead
+      if (rate == null && product.bandFallback === 'range') {
+        rate = lo + (hi - lo) * RANGE_POSITION[band]
+        basis = 'range'
+      } else if (rate == null) basis = 'band-not-offered'
     }
   } else if (product.rateBasis === 'range') {
     rate = lo + (hi - lo) * RANGE_POSITION[band]

@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import { motion, useReducedMotion } from 'motion/react'
+import { motion, useMotionValue, useReducedMotion } from 'motion/react'
 import {
   ArrowLeftRight, ArrowRight, Briefcase, Building2, Check, ClipboardCheck, Clock, Handshake, House,
   KeyRound, Mail, MessageCircle, MessagesSquare, Phone, ReceiptText, Store, UserRound,
@@ -8,7 +8,9 @@ import {
 import Accordion from '../components/Accordion'
 import EnquiryForm from '../components/EnquiryForm'
 import HeroMark3D from '../components/HeroMark3D'
+import Scene3D from '../components/Scene3D'
 import PartnerCarousel from '../components/PartnerCarousel'
+import ProcessRail from '../components/ProcessRail'
 import Photo from '../components/Photo'
 import { Button, Note, TextLink } from '../components/ui'
 import { getHomeContent } from '../content/home'
@@ -17,6 +19,8 @@ import { partners } from '../data/partners'
 import { photos } from '../data/photos'
 import { site } from '../data/site'
 import { useTitle } from '../lib/useTitle'
+
+const loadJourney = () => import('../three/journey.js')
 
 // Kept so inner pages can keep importing the shared closing section from here
 export { Close } from '../components/Close'
@@ -197,24 +201,30 @@ function WhyChooseUs({ content }) {
 
 // E. Process
 function Process({ content }) {
+  // The vertical rail fills downward with the scroll; the sticky 3D panel
+  // (large screens only) follows the same progress, one station per step
+  const reduce = useReducedMotion()
+  const progress = useMotionValue(0)
+  const journeyOptions = useMemo(() => ({ getProgress: () => progress.get() }), [progress])
+
   return (
     <section className="bg-mist py-20 md:py-28" aria-labelledby="process-title">
       <div className="wrap">
         <SectionTitle id="process-title">{content.title}</SectionTitle>
-        <ol className="mt-12 grid gap-10 md:grid-cols-4 md:gap-6">
-          {content.steps.map((s, i) => (
-            <li key={s.title}>
-              <div className="flex items-center gap-3">
-                <span className="figure grid size-10 shrink-0 place-items-center rounded-full bg-ink text-white">{i + 1}</span>
-                {i < content.steps.length - 1 && <span className="hidden h-px flex-1 bg-line-strong md:block" aria-hidden />}
+        <div className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-6">
+            <ProcessRail steps={content.steps} spacious onProgress={(p) => progress.set(p)} />
+            <Note className="mt-12 max-w-[60ch]">{content.note}</Note>
+            <TextLink to="/how-it-works" className="mt-6">See the process in detail</TextLink>
+          </div>
+          {!reduce && (
+            <div className="hidden lg:col-span-6 lg:block">
+              <div className="sticky top-28 h-[min(72vh,40rem)] overflow-hidden rounded-3xl bg-[radial-gradient(120%_90%_at_50%_0%,#ffffff,var(--color-sky))]">
+                <Scene3D load={loadJourney} options={journeyOptions} className="size-full" />
               </div>
-              <h3 className="mt-5 text-lg font-semibold">{s.title}</h3>
-              <p className="mt-2 text-slate">{s.body}</p>
-            </li>
-          ))}
-        </ol>
-        <Note className="mt-12 max-w-[80ch]">{content.note}</Note>
-        <TextLink to="/how-it-works" className="mt-6">See the process in detail</TextLink>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

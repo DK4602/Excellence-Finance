@@ -2,6 +2,7 @@ import { useTitle } from '../lib/useTitle'
 import { PageHead, Note } from '../components/ui'
 import { Close } from './Home'
 import Photo from '../components/Photo'
+import ProcessRail from '../components/ProcessRail'
 import { photos } from '../data/photos'
 
 export const steps = [
@@ -48,19 +49,14 @@ export default function Process() {
         <Photo photo={photos.couple} ratio={21 / 9} priority sizes="100vw" className="rounded-3xl max-md:[aspect-ratio:4/3]!" />
       </div>
       <section className="wrap pb-24 md:pb-32">
-        <ol className="border-t border-line">
-          {steps.map((s, i) => (
-            <li key={s.title} className="grid gap-4 border-b border-line py-10 md:grid-cols-12 md:gap-8 md:py-12">
-              <span className="figure grid size-12 place-items-center rounded-full bg-ink text-lg text-white md:col-span-1">{i + 1}</span>
-              <div className="md:col-span-4 md:col-start-2">
-                <h2 className="font-display text-[1.75rem] leading-tight">{s.title}</h2>
-                <p className="mt-2 text-sm text-slate">Led by: <span className="font-medium text-ink">{s.who}</span></p>
-              </div>
-              <p className="max-w-[56ch] text-lg text-slate md:col-span-7">{s.body}</p>
-            </li>
-          ))}
-        </ol>
-        <Note className="mt-10 max-w-[80ch]">
+        <div className="max-w-3xl">
+          <ProcessRail
+            steps={steps.map((s) => ({ ...s, meta: <>Led by: <span className="font-medium text-ink">{s.who}</span></> }))}
+            surface="white"
+            headingAs="h2"
+          />
+        </div>
+        <Note className="mt-14 max-w-[80ch]">
           We cannot promise approval, a specific rate or a processing timeline. These depend on the lender’s policy and its assessment of your application.
         </Note>
       </section>

@@ -4,7 +4,7 @@ export const faqGroups = [
     items: [
       { q: 'Are you a bank or a lender?', a: 'No. Excellence Finance is an independent loan advisory and brokerage business. We help you understand and compare options and assist with your application. The lender alone decides whether to approve a loan and on what terms.' },
       { q: 'Do you guarantee approval or a particular rate?', a: 'No. Every rate, fee and EMI on this site is indicative. The final offer depends on the lender’s assessment of your income, credit history, documents and, for secured loans, the property or asset.' },
-      { q: 'Which banks are in the comparison?', a: 'The comparison shows published rates and fees from State Bank of India, HDFC Bank, Bank of Baroda, Punjab National Bank, Bank of Maharashtra and IDFC FIRST Bank, taken from each bank’s own website with the date we checked it. Showing a bank does not mean we have a partnership with it. Any confirmed lender relationships will be listed on our About page.' },
+      { q: 'Which banks are in the comparison?', a: 'The comparison shows published rates and fees from HDFC Bank, Bank of Baroda, Punjab National Bank, Bank of Maharashtra and IDFC FIRST Bank, taken from each bank’s own website with the date we checked it. Showing a bank does not mean we have a partnership with it. Any confirmed lender relationships will be listed on our About page.' },
     ],
   },
   {

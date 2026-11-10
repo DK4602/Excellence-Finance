@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router'
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 import { ChevronDown, AlertCircle, Check, ExternalLink } from 'lucide-react'
 import { loans, loanById } from '../data/loans'
-import { lenders, DATA_CHECKED } from '../data/lenders'
+import { lenders, DATA_CHECKED, DATA_CHECKED_UNTIL } from '../data/lenders'
 import { scoreBands, employmentTypes } from '../data/site'
 import { buildOffers, sortOffers, sorters } from '../lib/compare'
 import { describeFee, formatDate, formatINR, formatLakh, formatTenure } from '../lib/finance'
@@ -11,6 +11,8 @@ import { Field, RangeField, Select, Segmented } from '../components/fields'
 import { Button, DataBadge, Note, PageHead } from '../components/ui'
 import CostBar from '../components/CostBar'
 import BankLogo from '../components/BankLogo'
+import AnimatedNumber from '../components/AnimatedNumber'
+
 import { useTitle } from '../lib/useTitle'
 
 const ease = [0.23, 1, 0.32, 1]
@@ -57,13 +59,15 @@ export default function Compare() {
 
   return (
     <>
-      <PageHead title="Compare lenders on the whole cost" aside={<DataBadge date={DATA_CHECKED} />}>
-        Each bank is estimated with the same amount and tenure, so the numbers line up. Rates and fees come from each bank’s own published rate cards, not from your credit report.
+      <PageHead title="Compare lenders on the whole cost" aside={<DataBadge date={DATA_CHECKED} until={DATA_CHECKED_UNTIL} />}>
+        Each lender is estimated with the same amount and tenure, so the numbers line up. Rates and fees come from each lender’s own published rates, not from your credit report.
       </PageHead>
+
+      <Leaders offers={offers} amount={amount} months={months} loanName={loan.name} />
 
       <section className="wrap grid gap-10 pb-24 lg:grid-cols-12 lg:gap-12">
         <aside className="lg:col-span-4">
-          <form className="space-y-6 rounded-[20px] bg-mist p-6 md:p-8 lg:sticky lg:top-28" onSubmit={(e) => e.preventDefault()} aria-label="Comparison inputs">
+          <form className="space-y-6 rounded-[20px] bg-mist p-6 md:p-8 lg:sticky lg:top-28 lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-gutter:stable]" onSubmit={(e) => e.preventDefault()} aria-label="Comparison inputs">
             <Field label="Loan type" id="cmp-type">
               <Select id="cmp-type" value={type} onChange={(e) => changeType(e.target.value)}>
                 {loans.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
@@ -83,7 +87,7 @@ export default function Compare() {
               </Select>
             </Field>
             <fieldset>
-              <legend className="mb-2 text-sm text-slate">Banks <span className="text-xs">(none selected shows all)</span></legend>
+              <legend className="mb-2 text-sm text-slate">Lenders <span className="text-xs">(none selected shows all)</span></legend>
               <div className="grid grid-cols-3 gap-2">
                 {lenders.map((l) => {
                   const on = lenderIds.includes(l.id)
@@ -133,15 +137,15 @@ export default function Compare() {
 
           <Note className="mt-6">
             Sorted by {sorters[sortBy].label.toLowerCase()}
-            {sortBy === 'cost' ? ', with banks whose fees are not fully published listed after the rest' : ''}
-            {sortBy === 'upfront' ? ', with banks whose fees are not fully published listed last' : ''}. This is a comparison, not a recommendation: the right loan also depends on prepayment terms, rate type and the bank’s service.
-            {band === 'unknown' && ' Because you don’t know your score, each rate is estimated cautiously from the upper part of the bank’s published rates.'}
+            {sortBy === 'cost' ? ', with lenders whose fees are not fully published listed after the rest' : ''}
+            {sortBy === 'upfront' ? ', with lenders whose fees are not fully published listed last' : ''}. This is a comparison, not a recommendation: the right loan also depends on prepayment terms, rate type and the lender’s service.
+            {band === 'unknown' && ' Because you don’t know your score, each rate is estimated cautiously from the upper part of the lender’s published rates.'}
           </Note>
 
           <LayoutGroup>
             {[
               { key: 'ranked', title: null, items: sorted.filter((o) => o.eligibleShape) },
-              { key: 'starting', title: 'Banks that publish only a starting rate', note: 'These banks do not publish a range or score bands, so we cannot estimate your rate. The EMI shown uses the starting rate and is the best case; your rate is likely to be higher. They are not ranked with the estimates above.', items: sorted.filter((o) => o.startingOnly && o.bestCase) },
+              { key: 'starting', title: 'Lenders that publish only a starting rate', note: 'These lenders do not publish a range or score bands, so we cannot estimate your rate. The EMI shown uses the starting rate and is the best case; your rate is likely to be higher. They are not ranked with the estimates above.', items: sorted.filter((o) => o.startingOnly && o.bestCase) },
               { key: 'none', title: 'Not available for these inputs', items: sorted.filter((o) => !o.eligibleShape && !(o.startingOnly && o.bestCase)) },
             ].filter((g) => g.items.length).map((g) => (
               <div key={g.key} className={g.title ? 'mt-12' : ''}>
@@ -158,7 +162,7 @@ export default function Compare() {
             ))}
           </LayoutGroup>
           <Note className="mt-10">
-            Bank names and logos are trademarks of their owners, shown only to identify whose published terms these are. Listing a bank here does not mean Excellence Finance has a partnership with it, and only the bank can approve a loan or confirm its rate.
+            Lender names and logos are trademarks of their owners, shown to identify whose published terms these are. Only the lender can approve a loan or confirm its rate.
           </Note>
 
           {sorted.length === 0 && (
@@ -364,5 +368,75 @@ function Term({ k, v }) {
       <dt className="text-slate">{k}</dt>
       <dd className={v === NA ? 'text-slate' : ''}>{v}</dd>
     </div>
+  )
+}
+
+// The quick answer above the form: which bank is lowest on each measure for
+// the current inputs. Lowest, never "best"; lenders with unpublished fees are
+// left out of the fee-based measures so an incomplete figure never wins.
+function Leaders({ offers, amount, months, loanName }) {
+  const ranked = offers.filter((o) => o.eligibleShape)
+  if (ranked.length < 2) return null
+  const complete = ranked.filter((o) => !o.hasUnknownFees)
+  const lowest = (list, key) => list.reduce((best, o) => (best == null || key(o) < key(best) ? o : best), null)
+  const feeNote = (o) => (o.upfront === 0 ? 'Waived under a published offer' : o.hasCeilingFees ? 'At published maximum, incl. GST' : o.upfrontGst ? 'Incl. GST' : 'As published')
+
+  const tiles = [
+    {
+      key: 'cost',
+      label: 'Lowest estimated total cost',
+      offer: lowest(complete.length ? complete : ranked, (o) => o.totalCost),
+      value: (o) => o.totalCost,
+      sub: () => (complete.length ? "Interest + fees" : "Some fees unconfirmed"),
+    },
+    { key: 'emi', label: 'Lowest indicative EMI', offer: lowest(ranked, (o) => o.totals.emi), value: (o) => o.totals.emi, sub: () => 'Per month' },
+    complete.length > 0 && {
+      key: 'upfront',
+      label: 'Lowest stated upfront fees',
+      offer: lowest(complete, (o) => o.upfront),
+      value: (o) => o.upfront,
+      sub: feeNote,
+    },
+  ].filter(Boolean)
+
+  return (
+    <section className="wrap -mt-4 mb-12 md:-mt-6" aria-labelledby="leaders-title">
+      <div className="rounded-3xl bg-mist p-5 sm:p-6 md:p-8">
+        <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between md:gap-6">
+          <h2 id="leaders-title" className="font-display text-[1.35rem] leading-tight md:text-[1.6rem]">
+            Lowest for a {formatLakh(amount)} {loanName.toLowerCase()} over {formatTenure(months)}
+          </h2>
+          <p className="text-sm text-slate">Indicative, from published rate cards. Not a recommendation.</p>
+        </div>
+        <dl className={`mt-5 grid gap-3 md:gap-4 ${tiles.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+          {tiles.map((t) => (
+            <div key={t.key} className="flex items-center justify-between gap-4 rounded-[18px] bg-white p-4 shadow-[var(--shadow-float)] sm:block sm:p-5">
+              <div className="min-w-0">
+                <dt className="text-sm text-slate">{t.label}</dt>
+                <dd className="mt-2.5">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={t.offer.lender.id}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.2, ease }}
+                      className="flex min-w-0 items-center gap-3"
+                    >
+                      <BankLogo lender={t.offer.lender} size="sm" />
+                      <span className="min-w-0 text-sm font-medium max-sm:hidden">{t.offer.lender.short}</span>
+                    </motion.span>
+                  </AnimatePresence>
+                </dd>
+              </div>
+              <dd className="shrink-0 text-right sm:mt-4 sm:text-left">
+                <AnimatedNumber value={t.value(t.offer)} format={formatINR} className="figure block text-[1.2rem] leading-none whitespace-nowrap md:text-[1.6rem]" />
+                <span className="mt-1.5 block text-xs text-slate">{t.sub(t.offer)}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
   )
 }

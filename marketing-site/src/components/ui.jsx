@@ -43,12 +43,20 @@ export function Note({ children, className = '' }) {
   )
 }
 
-export function DataBadge({ date }) {
-  const d = new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+// "8 Nov 2026", or "8–10 Nov 2026" when lenders were checked over a few days
+export function checkedLabel(date, until) {
+  const f = (x, o) => new Date(x + 'T00:00:00').toLocaleDateString('en-IN', o)
+  const full = { day: 'numeric', month: 'short', year: 'numeric' }
+  if (!until || until === date) return f(date, full)
+  if (date.slice(0, 7) === until.slice(0, 7)) return `${f(date, { day: 'numeric' })}–${f(until, full)}`
+  return `${f(date, full)} to ${f(until, full)}`
+}
+
+export function DataBadge({ date, until }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-sky px-3 py-1 text-xs font-medium text-ink">
       <span className="size-1.5 rounded-full bg-cyan" aria-hidden />
-      Banks’ published rates, checked {d}
+      Lenders’ published rates, checked {checkedLabel(date, until)}
     </span>
   )
 }

@@ -1,5 +1,6 @@
-import { useId } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { Children, isValidElement, useId } from 'react'
+import { Check } from 'lucide-react'
+import Dropdown from './Dropdown'
 
 export function RangeField({ label, value, min, max, step = 1, onChange, display, hint }) {
   const id = useId()
@@ -58,20 +59,59 @@ export function Input({ id, error, className = '', ...rest }) {
   )
 }
 
-export function Select({ id, error, children, className = '', ...rest }) {
+// The site's select: the custom Dropdown (accessible combobox) behind the
+// familiar <Select><option/></Select> API. onChange receives { target: { value } }
+// so handlers written for a native select keep working. Pass `options`
+// ([{ value, label }]) instead of children if that is simpler.
+export function Select({ id, value, onChange, onBlur, error, children, options, placeholder }) {
+  const list =
+    options ??
+    Children.toArray(children)
+      .filter((c) => isValidElement(c) && c.type === 'option')
+      .map((c) => {
+        const label = Children.toArray(c.props.children).join('')
+        return { value: c.props.value ?? label, label }
+      })
+  // An empty-value option acts as the "nothing chosen" placeholder
+  const empty = list.find((o) => o.value === '')
   return (
-    <div className="relative">
-      <select
+    <Dropdown
+      id={id}
+      labelId={`${id}-label`}
+      value={value}
+      onChange={(v) => onChange?.({ target: { value: v } })}
+      onBlur={onBlur}
+      options={list}
+      placeholder={placeholder ?? empty?.label}
+      error={error}
+    />
+  )
+}
+
+// Custom checkbox: the native input stays (visually hidden) for keyboard,
+// forms and screen readers; the box is drawn to match the site's controls.
+export function Checkbox({ id, checked, onChange, error, children, className = '' }) {
+  return (
+    <label htmlFor={id} className={`group flex cursor-pointer items-start gap-3 text-sm leading-relaxed ${className}`}>
+      <input
         id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`${control} appearance-none pr-10 ${className}`}
-        {...rest}
+        className="peer sr-only"
+      />
+      <span
+        aria-hidden
+        className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-md border transition-[background-color,border-color,box-shadow] duration-150 peer-focus-visible:ring-4 peer-focus-visible:ring-lapis/20 ${
+          checked ? 'border-ink bg-ink text-white' : error ? 'border-danger bg-white' : 'border-line-strong bg-white group-hover:border-slate/60'
+        }`}
       >
-        {children}
-      </select>
-      <ChevronDown aria-hidden className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-slate" />
-    </div>
+        <Check className={`size-3.5 transition-[opacity,transform] duration-150 ${checked ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`} strokeWidth={3} />
+      </span>
+      <span className="text-slate">{children}</span>
+    </label>
   )
 }
 

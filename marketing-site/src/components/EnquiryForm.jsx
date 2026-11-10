@@ -6,7 +6,7 @@ import { loans, loanById } from '../data/loans'
 import { scoreBands, employmentTypes } from '../data/site'
 import { formatLakh, formatTenure } from '../lib/finance'
 import { submitEnquiry, newIdempotencyKey } from '../lib/api'
-import { Field, Input, Select, Textarea, Segmented } from './fields'
+import { Checkbox, Field, Input, Select, Textarea, Segmented } from './fields'
 import Dropdown from './Dropdown'
 import { Button } from './ui'
 
@@ -185,10 +185,7 @@ export default function EnquiryForm({ variant = 'full', preset, source }) {
               error={show('loan')}
             />
           ) : (
-            <Select id="f-loan" value={v.loan} onChange={set('loan')} onBlur={blur('loan')} error={show('loan')}>
-              <option value="">Choose a loan</option>
-              {loans.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-            </Select>
+            <Select id="f-loan" value={v.loan} onChange={set('loan')} onBlur={blur('loan')} error={show('loan')} options={loanOptions} placeholder="Choose a loan" />
           )}
         </Field>
         <Field label="City or town" id="f-city" error={show('city')}>
@@ -258,21 +255,10 @@ export default function EnquiryForm({ variant = 'full', preset, source }) {
       </div>
 
       <div>
-        <label className="flex cursor-pointer gap-3 text-sm leading-relaxed">
-          <input
-            id="f-consent"
-            type="checkbox"
-            checked={v.consent}
-            onChange={set('consent')}
-            aria-invalid={!!show('consent')}
-            aria-describedby={show('consent') ? 'f-consent-error' : undefined}
-            className="mt-0.5 size-5 shrink-0 cursor-pointer accent-ink"
-          />
-          <span className="text-slate">
-            I agree to be contacted by Excellence Finance about this enquiry, and I have read the{' '}
-            <Link to="/privacy" className="text-lapis underline">Privacy Policy</Link>.
-          </span>
-        </label>
+        <Checkbox id="f-consent" checked={v.consent} onChange={set('consent')} error={show('consent')}>
+          I agree to be contacted by Excellence Finance about this enquiry, and I have read the{' '}
+          <Link to="/privacy" className="text-lapis underline">Privacy Policy</Link>.
+        </Checkbox>
         {show('consent') && <p id="f-consent-error" role="alert" className="mt-1.5 text-sm text-danger">{show('consent')}</p>}
       </div>
 
